@@ -207,4 +207,4 @@ Todos los servicios front se conectan a la API REST del backend; los tipos (`fro
 
 ## Licencia
 
-Este proyecto se distribuye como MVP personal. Ajusta o incluye una licencia formal (por ejemplo MIT) según tus necesidades antes de publicar o compartir el repositorio.
+Este proyecto se distribuye como MVP personal. Desarrollado y diseñado por Miguel Miguez.
