@@ -21,7 +21,7 @@ export const createBooking = async (
     .get();
 
   if (!existingSnapshot.empty) {
-    throw new HttpError(409, "El horario ya está reservado para ese servicio.");
+    throw new HttpError(409, "El horario ya no está disponible.");
   }
 
   const bookingDocument: BookingDocument = {
