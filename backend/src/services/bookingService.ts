@@ -18,7 +18,11 @@ const generateDailySlots = (intervalMinutes: number): string[] => {
   const startMinutes = BUSINESS_START_HOUR * 60;
   const endMinutes = BUSINESS_END_HOUR * 60;
 
-  for (let minutes = startMinutes; minutes <= endMinutes; minutes += intervalMinutes) {
+  for (
+    let minutes = startMinutes;
+    minutes <= endMinutes;
+    minutes += intervalMinutes
+  ) {
     const hours = Math.floor(minutes / 60);
     const remainder = minutes % 60;
     slots.push(`${pad(hours)}:${pad(remainder)}`);
@@ -96,7 +100,9 @@ export const suggestAvailableSlots = async (
   limit = 3
 ): Promise<string[]> => {
   const db = getFirestore();
-  let query: Query = db.collection(BOOKINGS_COLLECTION).where("date", "==", date);
+  let query: Query = db
+    .collection(BOOKINGS_COLLECTION)
+    .where("date", "==", date);
 
   if (service) {
     query = query.where("service", "==", service);
@@ -135,7 +141,11 @@ export const createBooking = async (
 
   const db = getFirestore();
 
-  const slotTaken = await isSlotTaken(payload.date, payload.time, payload.service);
+  const slotTaken = await isSlotTaken(
+    payload.date,
+    payload.time,
+    payload.service
+  );
 
   if (slotTaken) {
     throw new HttpError(409, "El horario ya no está disponible.");

@@ -42,7 +42,10 @@ const getConversationState = (chatId: string): ConversationState => {
   return conversations.get(chatId) ?? { step: "idle" };
 };
 
-const setConversationState = (chatId: string, state: ConversationState): void => {
+const setConversationState = (
+  chatId: string,
+  state: ConversationState
+): void => {
   conversations.set(chatId, state);
 };
 
@@ -105,7 +108,10 @@ const startReservationFlow = async (message: Message): Promise<void> => {
       "¿Qué día te viene bien? Escribe la fecha en formato YYYY-MM-DD (ejemplo 2025-10-18). Puedes escribir *cancelar* para salir."
     );
   } catch (error) {
-    logger.error("No se pudieron obtener los servicios para iniciar la reserva", error);
+    logger.error(
+      "No se pudieron obtener los servicios para iniciar la reserva",
+      error
+    );
     await message.reply(
       "No pude obtener la lista de servicios en este momento. Intenta más tarde."
     );
@@ -203,9 +209,10 @@ const handleTimeStep = async (
         customerPhone = sanitizePhoneNumber(message.from, contact.number);
       }
     } catch (contactError) {
-      const reason = contactError instanceof Error
-        ? contactError.message
-        : String(contactError);
+      const reason =
+        contactError instanceof Error
+          ? contactError.message
+          : String(contactError);
       logger.debug(`No se pudo obtener el contacto de WhatsApp: ${reason}`);
     }
 
