@@ -22,6 +22,12 @@ declare module "whatsapp-web.js" {
     constructor(options?: LocalAuthOptions);
   }
 
+  export interface Contact {
+    number?: string;
+    pushname?: string;
+    name?: string;
+  }
+
   export interface ClientOptions {
     puppeteer?: {
       headless?: boolean | "new";
@@ -47,5 +53,6 @@ declare module "whatsapp-web.js" {
     from: string;
     fromMe: boolean;
     reply(content: string): Promise<void>;
+    getContact(): Promise<Contact>;
   }
 }

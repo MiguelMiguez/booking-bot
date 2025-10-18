@@ -1,26 +1,143 @@
-import type { QueryDocumentSnapshot } from "firebase-admin/firestore";
+import type { Query, QueryDocumentSnapshot } from "firebase-admin/firestore";
 import { getFirestore } from "../config/firebase";
 import { Booking, CreateBookingInput } from "../models/booking";
 import { HttpError } from "../utils/httpError";
 
 const BOOKINGS_COLLECTION = "bookings";
 
+const BUSINESS_START_HOUR = 9;
+const BUSINESS_END_HOUR = 19;
+const SLOT_INTERVAL_MINUTES = 30;
+
 type BookingDocument = CreateBookingInput & { createdAt: string };
+
+const pad = (value: number): string => value.toString().padStart(2, "0");
+
+const generateDailySlots = (intervalMinutes: number): string[] => {
+  const slots: string[] = [];
+  const startMinutes = BUSINESS_START_HOUR * 60;
+  const endMinutes = BUSINESS_END_HOUR * 60;
+
+  for (let minutes = startMinutes; minutes <= endMinutes; minutes += intervalMinutes) {
+    const hours = Math.floor(minutes / 60);
+    const remainder = minutes % 60;
+    slots.push(`${pad(hours)}:${pad(remainder)}`);
+  }
+
+  return slots;
+};
+
+export const isWithinBusinessHours = (time: string): boolean => {
+  const [hourStr, minuteStr] = time.split(":");
+  if (!hourStr || !minuteStr) {
+    return false;
+  }
+
+  const hour = Number.parseInt(hourStr, 10);
+  const minute = Number.parseInt(minuteStr, 10);
+
+  if (Number.isNaN(hour) || Number.isNaN(minute)) {
+    return false;
+  }
+
+  if (minute < 0 || minute >= 60) {
+    return false;
+  }
+
+  if (hour < BUSINESS_START_HOUR) {
+    return false;
+  }
+
+  if (hour > BUSINESS_END_HOUR) {
+    return false;
+  }
+
+  if (hour === BUSINESS_END_HOUR && minute > 0) {
+    return false;
+  }
+
+  return true;
+};
+
+const isSlotTaken = async (
+  date: string,
+  time: string,
+  service?: string
+): Promise<boolean> => {
+  const db = getFirestore();
+
+  let query: Query = db.collection(BOOKINGS_COLLECTION);
+
+  if (service) {
+    query = query.where("service", "==", service);
+  }
+
+  query = query.where("date", "==", date).where("time", "==", time);
+
+  const snapshot = await query.limit(1).get();
+  return !snapshot.empty;
+};
+
+export const isSlotAvailable = async (
+  date: string,
+  time: string,
+  service?: string
+): Promise<boolean> => {
+  if (!isWithinBusinessHours(time)) {
+    return false;
+  }
+
+  return !(await isSlotTaken(date, time, service));
+};
+
+export const suggestAvailableSlots = async (
+  date: string,
+  service: string,
+  limit = 3
+): Promise<string[]> => {
+  const db = getFirestore();
+  let query: Query = db.collection(BOOKINGS_COLLECTION).where("date", "==", date);
+
+  if (service) {
+    query = query.where("service", "==", service);
+  }
+
+  const snapshot = await query.get();
+  const taken = new Set(
+    snapshot.docs.map((doc: QueryDocumentSnapshot) => {
+      const data = doc.data() as BookingDocument;
+      return data.time;
+    })
+  );
+
+  const slots = generateDailySlots(SLOT_INTERVAL_MINUTES);
+  const suggestions: string[] = [];
+
+  for (const slot of slots) {
+    if (!taken.has(slot)) {
+      suggestions.push(slot);
+    }
+
+    if (suggestions.length >= limit) {
+      break;
+    }
+  }
+
+  return suggestions;
+};
 
 export const createBooking = async (
   payload: CreateBookingInput
 ): Promise<Booking> => {
+  if (!isWithinBusinessHours(payload.time)) {
+    throw new HttpError(400, "Los turnos disponibles son de 09:00 a 19:00.");
+  }
+
   const db = getFirestore();
 
-  const existingSnapshot = await db
-    .collection(BOOKINGS_COLLECTION)
-    .where("service", "==", payload.service)
-    .where("date", "==", payload.date)
-    .where("time", "==", payload.time)
-    .limit(1)
-    .get();
+  const slotTaken = await isSlotTaken(payload.date, payload.time, payload.service);
 
-  if (!existingSnapshot.empty) {
+  if (slotTaken) {
     throw new HttpError(409, "El horario ya no está disponible.");
   }
 
