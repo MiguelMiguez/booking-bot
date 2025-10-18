@@ -25,6 +25,28 @@ Backend inicial en TypeScript + Express conectado a Firebase Firestore para gest
 - `npm run dev`: levanta el servidor con `ts-node`.
 - `npm run typecheck`: ejecuta `tsc --noEmit` para validar tipos.
 
+## Integración con WhatsApp (MVP)
+
+El backend incorpora un bot experimental con `whatsapp-web.js` para validar flujos desde WhatsApp. Para activarlo:
+
+1. Define en `.env` las variables opcionales:
+   ```bash
+   WHATSAPP_ENABLED=true
+   # WHATSAPP_SESSION_PATH=.wwebjs_auth        # Opcional, directorio donde se guardará la sesión
+   # WHATSAPP_BROWSER_PATH="C:/Ruta/a/chrome.exe"  # Opcional, ruta a un navegador Chromium específico
+   ```
+2. Ejecuta `npm install` si aún no agregaste las dependencias nuevas.
+3. Inicia el servidor (`npm run dev`). En consola aparecerá un QR: escanéalo con la app de WhatsApp para vincular la cuenta de prueba.
+
+### Comandos disponibles en el chat
+
+- `menu` / `help` / `ayuda`: muestra las instrucciones.
+- `servicios`: obtiene la lista actual de servicios desde Firestore.
+- `turnos`: responde con los próximos turnos registrados (máximo 5).
+- `reservar Nombre|Servicio|YYYY-MM-DD|HH:mm|Telefono`: crea un turno rápido validando la disponibilidad.
+
+> El bot ignora mensajes enviados por sí mismo y mensajes en grupos. Para reiniciar la sesión borra la carpeta configurada en `WHATSAPP_SESSION_PATH`.
+
 ## Ejecución en desarrollo
 
 ```bash

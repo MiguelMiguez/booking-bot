@@ -13,8 +13,8 @@ const emptyForm: NewBooking = {
   name: "",
   phone: "",
   service: "",
-  day: "",
-  hour: "",
+  date: "",
+  time: "",
 };
 
 /**
@@ -100,7 +100,10 @@ export const BookingForm = ({
           </option>
           {services.map((service) => (
             <option key={service.id} value={service.name}>
-              {service.name} · {service.duration} min
+              {service.name}
+              {service.durationMinutes !== undefined
+                ? ` · ${service.durationMinutes} min`
+                : ""}
             </option>
           ))}
         </select>
@@ -110,10 +113,10 @@ export const BookingForm = ({
         <label className="field">
           <span>Día</span>
           <input
-            name="day"
+            name="date"
             type="date"
             required
-            value={form.day}
+            value={form.date}
             onChange={handleChange}
             disabled={isSubmitting}
           />
@@ -121,10 +124,10 @@ export const BookingForm = ({
         <label className="field">
           <span>Hora</span>
           <input
-            name="hour"
+            name="time"
             type="time"
             required
-            value={form.hour}
+            value={form.time}
             onChange={handleChange}
             step="900"
             disabled={isSubmitting}

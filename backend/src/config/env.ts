@@ -8,19 +8,23 @@ interface EnvConfig {
   firebaseProjectId: string;
   firebaseClientEmail: string;
   firebasePrivateKey: string;
+  whatsappEnabled: boolean;
+  whatsappSessionPath?: string;
+  whatsappBrowserPath?: string;
 }
 
-const requiredVariables: Array<keyof Omit<EnvConfig, "port">> = [
-  "firebaseProjectId",
-  "firebaseClientEmail",
-  "firebasePrivateKey",
-];
+const requiredVariables: Array<
+  "firebaseProjectId" | "firebaseClientEmail" | "firebasePrivateKey"
+> = ["firebaseProjectId", "firebaseClientEmail", "firebasePrivateKey"];
 
 const rawEnv = {
   PORT: process.env.PORT ?? "3000",
   FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
   FIREBASE_CLIENT_EMAIL: process.env.FIREBASE_CLIENT_EMAIL,
   FIREBASE_PRIVATE_KEY: process.env.FIREBASE_PRIVATE_KEY,
+  WHATSAPP_ENABLED: process.env.WHATSAPP_ENABLED,
+  WHATSAPP_SESSION_PATH: process.env.WHATSAPP_SESSION_PATH,
+  WHATSAPP_BROWSER_PATH: process.env.WHATSAPP_BROWSER_PATH,
 };
 
 const env: EnvConfig = {
@@ -28,6 +32,9 @@ const env: EnvConfig = {
   firebaseProjectId: rawEnv.FIREBASE_PROJECT_ID ?? "",
   firebaseClientEmail: rawEnv.FIREBASE_CLIENT_EMAIL ?? "",
   firebasePrivateKey: (rawEnv.FIREBASE_PRIVATE_KEY ?? "").replace(/\\n/g, "\n"),
+  whatsappEnabled: rawEnv.WHATSAPP_ENABLED === "true",
+  whatsappSessionPath: rawEnv.WHATSAPP_SESSION_PATH,
+  whatsappBrowserPath: rawEnv.WHATSAPP_BROWSER_PATH,
 };
 
 requiredVariables.forEach((key) => {

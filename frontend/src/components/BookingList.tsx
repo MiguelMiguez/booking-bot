@@ -4,31 +4,32 @@ interface BookingListProps {
   bookings: Booking[];
   isLoading?: boolean;
   emptyMessage?: string;
+  onDelete?: (id: string) => void;
+  deletingId?: string | null;
 }
 
-const formatDate = (day: string, hour: string): string => {
-  if (!day || !hour) {
+const formatDate = (date: string, time: string): string => {
+  if (!date || !time) {
     return "Sin horario";
   }
-  const isoDate = `${day}T${hour}`;
+  const isoDate = `${date}T${time}`;
   const parsed = new Date(isoDate);
   return Number.isNaN(parsed.getTime())
-    ? `${day} ${hour}`
+    ? `${date} ${time}`
     : parsed.toLocaleString();
 };
 
-const formatCreatedAt = (value: Booking["createdAt"]): string => {
-  const date = value.toDate();
-  return date.toLocaleString();
+const formatCreatedAt = (createdAt: string): string => {
+  const parsed = new Date(createdAt);
+  return Number.isNaN(parsed.getTime()) ? createdAt : parsed.toLocaleString();
 };
 
-/**
- * Lista de turnos existentes, utilizada dentro del panel principal.
- */
 export const BookingList = ({
   bookings,
   isLoading = false,
   emptyMessage = "No hay turnos registrados por el momento.",
+  onDelete,
+  deletingId = null,
 }: BookingListProps) => {
   if (isLoading && bookings.length === 0) {
     return <p className="empty-state">Cargando turnos...</p>;
@@ -44,9 +45,21 @@ export const BookingList = ({
         <div key={booking.id} className="list-item">
           <div className="list-item-header">
             <strong>{booking.name}</strong>
-            <span className="badge muted">{booking.service}</span>
+            <div className="list-item-actions">
+              <span className="badge muted">{booking.service}</span>
+              {onDelete && (
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => onDelete(booking.id)}
+                  disabled={deletingId === booking.id}
+                >
+                  {deletingId === booking.id ? "Eliminando..." : "Eliminar"}
+                </button>
+              )}
+            </div>
           </div>
-          <span>{formatDate(booking.day, booking.hour)}</span>
+          <span>{formatDate(booking.date, booking.time)}</span>
           <span>Contacto: {booking.phone}</span>
           <span className="fine-print">
             Creado: {formatCreatedAt(booking.createdAt)}

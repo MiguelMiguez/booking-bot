@@ -1,13 +1,11 @@
-import type { Timestamp } from "firebase/firestore";
-
 export interface Booking {
   id: string;
   name: string;
-  phone: string;
   service: string;
-  day: string;
-  hour: string;
-  createdAt: Timestamp;
+  date: string;
+  time: string;
+  phone: string;
+  createdAt: string;
 }
 
 export type NewBooking = Omit<Booking, "id" | "createdAt">;
@@ -15,10 +13,10 @@ export type NewBooking = Omit<Booking, "id" | "createdAt">;
 export interface Service {
   id: string;
   name: string;
-  duration: number;
+  description?: string;
+  durationMinutes?: number;
   price?: number;
+  createdAt: string;
 }
 
-export type NewService = Omit<Service, "id">;
-
-export type WithId<T extends Record<string, unknown>> = T & { id: string };
+export type NewService = Omit<Service, "id" | "createdAt">;

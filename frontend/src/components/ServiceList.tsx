@@ -32,8 +32,14 @@ export const ServiceList = ({
       {services.map((service) => (
         <div key={service.id} className="table-row">
           <span>{service.name}</span>
-          <span>{service.duration} min</span>
-          <span>{service.price ? `$${service.price.toFixed(2)}` : "—"}</span>
+          <span>
+            {service.durationMinutes !== undefined
+              ? `${service.durationMinutes} min`
+              : "—"}
+          </span>
+          <span>
+            {service.price !== undefined ? `$${service.price.toFixed(2)}` : "—"}
+          </span>
         </div>
       ))}
     </div>

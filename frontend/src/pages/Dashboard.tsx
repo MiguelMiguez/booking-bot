@@ -1,22 +1,28 @@
 import type { ChangeEvent, FormEvent } from "react";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { BookingForm } from "../components/BookingForm";
 import { BookingList } from "../components/BookingList";
 import { ServiceList } from "../components/ServiceList";
-import { createBooking, subscribeToBookings } from "../services/bookingService";
-import { createService, subscribeToServices } from "../services/serviceService";
+import {
+  createBooking,
+  deleteBooking,
+  fetchBookings,
+} from "../services/bookingService";
+import { createService, fetchServices } from "../services/serviceService";
 import type { Booking, NewBooking, NewService, Service } from "../types";
 
 interface ServiceFormState {
   name: string;
-  duration: string;
+  durationMinutes: string;
   price: string;
+  description: string;
 }
 
 const emptyServiceForm: ServiceFormState = {
   name: "",
-  duration: "",
+  durationMinutes: "",
   price: "",
+  description: "",
 };
 
 /**
@@ -29,45 +35,58 @@ const Dashboard = () => {
   const [isLoadingServices, setIsLoadingServices] = useState(true);
   const [isSubmittingBooking, setIsSubmittingBooking] = useState(false);
   const [isSubmittingService, setIsSubmittingService] = useState(false);
+  const [deletingBookingId, setDeletingBookingId] = useState<string | null>(
+    null
+  );
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [serviceError, setServiceError] = useState<string | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
   const [serviceForm, setServiceForm] =
     useState<ServiceFormState>(emptyServiceForm);
 
-  useEffect(() => {
-    const unsubscribe = subscribeToBookings(
-      (items) => {
-        setBookings(items);
-        setIsLoadingBookings(false);
-      },
-      (error) => {
-        setBookingError(error.message);
-        setIsLoadingBookings(false);
-      }
-    );
+  const loadBookings = useCallback(async () => {
+    setIsLoadingBookings(true);
+    setBookingError(null);
 
-    return () => {
-      unsubscribe();
-    };
+    try {
+      const items = await fetchBookings();
+      setBookings(items);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "No se pudieron obtener los turnos.";
+      setBookingError(message);
+    } finally {
+      setIsLoadingBookings(false);
+    }
+  }, []);
+
+  const loadServices = useCallback(async () => {
+    setIsLoadingServices(true);
+    setServiceError(null);
+
+    try {
+      const items = await fetchServices();
+      setServices(items);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "No se pudieron obtener los servicios.";
+      setServiceError(message);
+    } finally {
+      setIsLoadingServices(false);
+    }
   }, []);
 
   useEffect(() => {
-    const unsubscribe = subscribeToServices(
-      (items) => {
-        setServices(items);
-        setIsLoadingServices(false);
-      },
-      (error) => {
-        setServiceError(error.message);
-        setIsLoadingServices(false);
-      }
-    );
+    void loadBookings();
+  }, [loadBookings]);
 
-    return () => {
-      unsubscribe();
-    };
-  }, []);
+  useEffect(() => {
+    void loadServices();
+  }, [loadServices]);
 
   const handleCreateBooking = async (payload: NewBooking): Promise<void> => {
     setIsSubmittingBooking(true);
@@ -76,6 +95,7 @@ const Dashboard = () => {
 
     try {
       await createBooking(payload);
+      await loadBookings();
       setNotification("Turno creado correctamente.");
     } catch (error) {
       const message =
@@ -88,8 +108,28 @@ const Dashboard = () => {
     }
   };
 
+  const handleDeleteBooking = async (id: string): Promise<void> => {
+    setDeletingBookingId(id);
+    setNotification(null);
+    setBookingError(null);
+
+    try {
+      await deleteBooking(id);
+      await loadBookings();
+      setNotification("Turno eliminado correctamente.");
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "No se pudo eliminar el turno.";
+      setBookingError(message);
+    } finally {
+      setDeletingBookingId(null);
+    }
+  };
+
   const handleServiceFormChange = (
-    event: ChangeEvent<HTMLInputElement>
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ): void => {
     const { name, value } = event.target;
     setServiceForm((prev) => ({ ...prev, [name]: value }));
@@ -103,16 +143,32 @@ const Dashboard = () => {
     setServiceError(null);
     setNotification(null);
 
+    const parsedDuration = Number(serviceForm.durationMinutes);
+    const parsedPrice =
+      serviceForm.price.trim().length > 0
+        ? Number(serviceForm.price)
+        : undefined;
+
     const payload: NewService = {
       name: serviceForm.name.trim(),
-      duration: Number(serviceForm.duration),
+      durationMinutes: Number.isNaN(parsedDuration)
+        ? undefined
+        : parsedDuration,
       price:
-        serviceForm.price.trim().length > 0
-          ? Number(serviceForm.price)
+        parsedPrice !== undefined && Number.isNaN(parsedPrice)
+          ? undefined
+          : parsedPrice,
+      description:
+        serviceForm.description.trim().length > 0
+          ? serviceForm.description.trim()
           : undefined,
     };
 
-    if (!payload.name || Number.isNaN(payload.duration)) {
+    if (
+      !payload.name ||
+      payload.durationMinutes === undefined ||
+      Number.isNaN(payload.durationMinutes)
+    ) {
       setServiceError("Completa el nombre y una duración válida en minutos.");
       setIsSubmittingService(false);
       return;
@@ -121,6 +177,7 @@ const Dashboard = () => {
     try {
       await createService(payload);
       setServiceForm(emptyServiceForm);
+      await loadServices();
       setNotification("Servicio creado correctamente.");
     } catch (error) {
       const message =
@@ -179,11 +236,11 @@ const Dashboard = () => {
             <label className="field">
               <span>Duración (min)</span>
               <input
-                name="duration"
+                name="durationMinutes"
                 type="number"
                 min="1"
                 required
-                value={serviceForm.duration}
+                value={serviceForm.durationMinutes}
                 onChange={handleServiceFormChange}
                 disabled={isSubmittingService}
               />
@@ -201,6 +258,18 @@ const Dashboard = () => {
               />
             </label>
           </div>
+
+          <label className="field">
+            <span>Descripción (opcional)</span>
+            <textarea
+              name="description"
+              value={serviceForm.description}
+              onChange={handleServiceFormChange}
+              placeholder="Ej: Ideal para cortes rápidos con terminación clásica."
+              rows={3}
+              disabled={isSubmittingService}
+            />
+          </label>
 
           {serviceError && <p className="error">{serviceError}</p>}
 
@@ -228,6 +297,8 @@ const Dashboard = () => {
             bookings={bookings}
             isLoading={isLoadingBookings}
             emptyMessage="Aún no hay turnos. Crea uno con el formulario."
+            onDelete={handleDeleteBooking}
+            deletingId={deletingBookingId}
           />
         </article>
 

@@ -11,5 +11,10 @@
     "types": ["node"],
     "rootDir": "src"
   },
-  "include": ["src", "../frontend/src/firebaseConfig.js"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.d.ts",
+    "../frontend/src/firebaseConfig.js"
+  ]
 }
