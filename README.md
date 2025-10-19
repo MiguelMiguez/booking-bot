@@ -1,6 +1,6 @@
 # Booking Bot MVP
 
-Plataforma end-to-end para administrar turnos de un negocio desde un panel web y un bot de WhatsApp. El repositorio contiene un backend en TypeScript/Express conectado a Firebase Firestore y un frontend en React + Vite orientado a la gestión operativa. Además, se incluye un bot basado en `whatsapp-web.js` que permite validar el flujo conversacional de reserva de turnos.
+Plataforma end-to-end para administrar turnos de un negocio desde un panel web y un bot de WhatsApp. El repositorio contiene un backend en TypeScript/Express conectado a Firebase Firestore y un frontend en React + Vite orientado a la gestión operativa. Además, se incluye un bot basado en `whatsapp-web.js` que permite validar el flujo conversacional de reserva de turnos. El backend está preparado para desplegarse en Render (plan gratuito) como servicio Node.js.
 
 ## Tabla de contenidos
 
@@ -18,6 +18,7 @@ Plataforma end-to-end para administrar turnos de un negocio desde un panel web y
   - [Scripts de desarrollo](#scripts-de-desarrollo)
 - [Flujo de trabajo recomendado](#flujo-de-trabajo-recomendado)
 - [Pruebas manuales sugeridas](#pruebas-manuales-sugeridas)
+- [Despliegue en Render](#despliegue-en-render)
 - [Próximos pasos / Roadmap](#próximos-pasos--roadmap)
 - [Licencia](#licencia)
 
@@ -89,8 +90,8 @@ booking-bot/
    ```
 
 4. **Configurar variables de entorno**
-   - Copia `backend/.env.example` a `backend/.env` y completa los campos obligatorios.
-   - Si el frontend requiere variables (por ejemplo la URL del backend), crea `frontend/.env` siguiendo el esquema de `VITE_`.
+  - Copia `backend/.env.example` a `backend/.env` y completa los campos obligatorios.
+  - Si el frontend requiere variables (por ejemplo la URL del backend), crea `frontend/.env` siguiendo el esquema que se muestra en `frontend/.env.example`.
 
 ## Backend (Express + Firestore)
 
@@ -120,6 +121,8 @@ Ejecutados desde `booking-bot/backend/`:
 
 - `npm run dev`: levanta el servidor con `ts-node --files` (incluye el bot si está habilitado).
 - `npm run typecheck`: valida tipos con `tsc --noEmit`.
+- `npm run build`: compila TypeScript hacia `dist/` (modo producción).
+- `npm run start`: ejecuta la build compilada (`node dist/index.js`). Render usa estos dos scripts.
 
 ### Endpoints principales
 
@@ -201,7 +204,18 @@ Todos los servicios front se conectan a la API REST del backend; los tipos (`fro
 - Añadir selección dinámica del servicio durante la conversación (actualmente toma el primero disponible).
 - Persistir historial de conversaciones o auditoría.
 - Autenticación en el panel web.
-- Despliegue controlado (Firebase Hosting, Vercel, Render o similares).
+- Despliegue controlado (Render, Railway o similares).
+
+## Despliegue en Render
+
+1. **Repository → Render**: conecta tu cuenta de Render con el repositorio y crea un nuevo *Web Service* apuntando a la carpeta `backend/`.
+2. **Configuración**:
+  - *Build Command*: `npm install && npm run build`
+  - *Start Command*: `npm run start`
+  - *Root Directory*: `backend`
+  - *Environment*: Node
+3. **Variables de entorno**: replica el contenido de `backend/.env` dentro del panel de Render (especialmente las credenciales de Firebase).
+4. Render asignará automáticamente una URL pública (`https://<tu-app>.onrender.com`). Configura en el frontend una variable `VITE_API_BASE_URL` apuntando a `https://<tu-app>.onrender.com/api` y reconstruye/depliega el front.
 - Tests automatizados (unitarios en backend/frontend, pruebas e2e para el flujo de reservas).
 - Webhooks o integración con calendarización externa.
 

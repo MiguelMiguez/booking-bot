@@ -1,4 +1,12 @@
-const DEFAULT_BASE_URL = "http://localhost:3000/api";
+const detectDefaultBaseUrl = (): string => {
+  if (import.meta.env.PROD && typeof window !== "undefined") {
+    return `${window.location.origin}/api`;
+  }
+
+  return "http://localhost:3000/api";
+};
+
+const DEFAULT_BASE_URL = detectDefaultBaseUrl();
 
 const trimTrailingSlash = (value: string): string =>
   value.endsWith("/") ? value.slice(0, -1) : value;

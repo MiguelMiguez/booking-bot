@@ -13,10 +13,6 @@ interface EnvConfig {
   whatsappBrowserPath?: string;
 }
 
-const requiredVariables: Array<
-  "firebaseProjectId" | "firebaseClientEmail" | "firebasePrivateKey"
-> = ["firebaseProjectId", "firebaseClientEmail", "firebasePrivateKey"];
-
 const rawEnv = {
   PORT: process.env.PORT ?? "3000",
   FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
@@ -37,16 +33,38 @@ const env: EnvConfig = {
   whatsappBrowserPath: rawEnv.WHATSAPP_BROWSER_PATH,
 };
 
-requiredVariables.forEach((key) => {
-  if (!env[key] || env[key].length === 0) {
-    const variableName = key
-      .replace("firebase", "FIREBASE_")
-      .replace("ProjectId", "PROJECT_ID")
-      .replace("ClientEmail", "CLIENT_EMAIL")
-      .replace("PrivateKey", "PRIVATE_KEY");
+const credentialKeys: Array<
+  "firebaseProjectId" | "firebaseClientEmail" | "firebasePrivateKey"
+> = ["firebaseProjectId", "firebaseClientEmail", "firebasePrivateKey"];
 
-    logger.warn(`Variable de entorno faltante: ${variableName}`);
-  }
-});
+const credentialEnvMap: Record<typeof credentialKeys[number], string> = {
+  firebaseProjectId: "FIREBASE_PROJECT_ID",
+  firebaseClientEmail: "FIREBASE_CLIENT_EMAIL",
+  firebasePrivateKey: "FIREBASE_PRIVATE_KEY",
+};
+
+const missingCredentialKeys = credentialKeys.filter(
+  (key) => env[key] === ""
+);
+
+const anyCredentialProvided = credentialKeys.some((key) => env[key] !== "");
+
+const runningOnGcp = Boolean(
+  process.env.FIREBASE_CONFIG ??
+    process.env.GOOGLE_CLOUD_PROJECT ??
+    process.env.GCLOUD_PROJECT ??
+    process.env.K_SERVICE ??
+    process.env.FUNCTIONS_EMULATOR
+);
+
+if (anyCredentialProvided && missingCredentialKeys.length > 0) {
+  missingCredentialKeys.forEach((key) => {
+    logger.warn(`Variable de entorno faltante: ${credentialEnvMap[key]}`);
+  });
+} else if (!anyCredentialProvided && !runningOnGcp) {
+  logger.warn(
+    "No se detectaron credenciales de Firebase. Configura las variables FIREBASE_* o define GOOGLE_APPLICATION_CREDENTIALS."
+  );
+}
 
 export default env;
