@@ -23,11 +23,25 @@ const rawEnv = {
   WHATSAPP_BROWSER_PATH: process.env.WHATSAPP_BROWSER_PATH,
 };
 
+const sanitizeMultilineSecret = (value: string | undefined): string => {
+  if (!value) {
+    return "";
+  }
+
+  const trimmed = value.trim();
+  const unquoted =
+    trimmed.startsWith("\"") && trimmed.endsWith("\"")
+      ? trimmed.slice(1, -1)
+      : trimmed;
+
+  return unquoted.replace(/\\n/g, "\n");
+};
+
 const env: EnvConfig = {
   port: Number.parseInt(rawEnv.PORT, 10) || 3000,
   firebaseProjectId: rawEnv.FIREBASE_PROJECT_ID ?? "",
   firebaseClientEmail: rawEnv.FIREBASE_CLIENT_EMAIL ?? "",
-  firebasePrivateKey: (rawEnv.FIREBASE_PRIVATE_KEY ?? "").replace(/\\n/g, "\n"),
+  firebasePrivateKey: sanitizeMultilineSecret(rawEnv.FIREBASE_PRIVATE_KEY),
   whatsappEnabled: rawEnv.WHATSAPP_ENABLED === "true",
   whatsappSessionPath: rawEnv.WHATSAPP_SESSION_PATH,
   whatsappBrowserPath: rawEnv.WHATSAPP_BROWSER_PATH,
