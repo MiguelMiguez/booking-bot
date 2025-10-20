@@ -37,10 +37,33 @@ export const ServiceEditorModal = ({
   onClose,
 }: ServiceEditorModalProps) => {
   const [form, setForm] = useState<ServiceFormValues>(emptyForm);
+  const [shouldRender, setShouldRender] = useState(open);
+  const [isVisible, setIsVisible] = useState(open);
+
+  useEffect(() => {
+    if (open) {
+      setShouldRender(true);
+      const frame = window.requestAnimationFrame(() => {
+        setIsVisible(true);
+      });
+      return () => window.cancelAnimationFrame(frame);
+    }
+
+    if (shouldRender) {
+      setIsVisible(false);
+      const timer = window.setTimeout(() => {
+        setShouldRender(false);
+        setForm(emptyForm);
+      }, 240);
+
+      return () => window.clearTimeout(timer);
+    }
+
+    return undefined;
+  }, [open, shouldRender]);
 
   useEffect(() => {
     if (!open) {
-      setForm(emptyForm);
       return;
     }
 
@@ -62,7 +85,7 @@ export const ServiceEditorModal = ({
     }
   }, [open, initialService]);
 
-  if (!open) {
+  if (!shouldRender) {
     return null;
   }
 
@@ -88,8 +111,18 @@ export const ServiceEditorModal = ({
   const actionLabel = mode === "create" ? "Crear" : "Guardar";
 
   return (
-    <div className="serviceEditorOverlay" role="dialog" aria-modal="true">
-      <div className="serviceEditorCard">
+    <div
+      className={`serviceEditorOverlay ${
+        isVisible ? "is-visible" : "is-hidden"
+      }`}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        className={`serviceEditorCard ${
+          isVisible ? "is-visible" : "is-hidden"
+        }`}
+      >
         <header className="serviceEditorHeader">
           <div>
             <h2>{title}</h2>

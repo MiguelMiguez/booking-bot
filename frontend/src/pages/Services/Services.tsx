@@ -7,6 +7,7 @@ import {
 import NotificationToast, {
   type NotificationType,
 } from "../../components/NotificationToast/NotificationToast";
+import { ConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog";
 import { useAuth } from "../../hooks/useAuth";
 import {
   createService,
@@ -98,6 +99,9 @@ const ServicesPage = () => {
   const [modalError, setModalError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [isConfirmBusy, setIsConfirmBusy] = useState(false);
 
   const loadServices = useCallback(async () => {
     setIsLoading(true);
@@ -194,25 +198,42 @@ const ServicesPage = () => {
     }
   };
 
-  const handleDelete = async (service: Service): Promise<void> => {
+  const requestDelete = (service: Service): void => {
     if (!isAdmin) {
       return;
     }
 
-    const confirmed = window.confirm(
-      `¿Eliminar el servicio "${service.name}"? Esta acción no se puede deshacer.`
-    );
+    setError(null);
+    setServiceToDelete(service);
+    setIsConfirmBusy(false);
+    setIsConfirmOpen(true);
+  };
 
-    if (!confirmed) {
+  const handleCancelDelete = useCallback(() => {
+    if (isConfirmBusy) {
       return;
     }
 
-    setDeletingId(service.id);
+    setIsConfirmOpen(false);
+    setServiceToDelete(null);
+  }, [isConfirmBusy]);
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!isAdmin || !serviceToDelete) {
+      return;
+    }
+
+    setIsConfirmBusy(true);
+    setDeletingId(serviceToDelete.id);
 
     try {
-      await deleteService(service.id);
-      setServices((prev) => prev.filter((item) => item.id !== service.id));
-      notify(`${service.name} se eliminó correctamente.`, "success");
+      await deleteService(serviceToDelete.id);
+      setServices((prev) =>
+        prev.filter((item) => item.id !== serviceToDelete.id)
+      );
+      notify(`${serviceToDelete.name} se eliminó correctamente.`, "success");
+      setIsConfirmOpen(false);
+      setServiceToDelete(null);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "No se pudo eliminar el servicio.";
@@ -220,8 +241,9 @@ const ServicesPage = () => {
       notify(message, "error");
     } finally {
       setDeletingId(null);
+      setIsConfirmBusy(false);
     }
-  };
+  }, [isAdmin, notify, serviceToDelete]);
 
   const emptyStateMessage = useMemo(() => {
     if (isLoading) {
@@ -274,12 +296,28 @@ const ServicesPage = () => {
               key={service.id}
               service={service}
               onEdit={isAdmin ? openEditModal : undefined}
-              onDelete={isAdmin ? handleDelete : undefined}
+              onDelete={isAdmin ? requestDelete : undefined}
               disabled={deletingId === service.id}
             />
           ))}
         </section>
       )}
+
+      <ConfirmDialog
+        open={isConfirmOpen}
+        title="Eliminar servicio"
+        description={
+          serviceToDelete
+            ? `¿Eliminar el servicio "${serviceToDelete.name}"? Esta acción no se puede deshacer.`
+            : "¿Eliminar el servicio seleccionado? Esta acción no se puede deshacer."
+        }
+        confirmLabel="Eliminar"
+        cancelLabel="Cancelar"
+        tone="danger"
+        isBusy={isConfirmBusy}
+        onCancel={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+      />
 
       <ServiceEditorModal
         open={isModalOpen}

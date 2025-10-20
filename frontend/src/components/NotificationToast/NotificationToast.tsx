@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./NotificationToast.css";
 
 export type NotificationType = "success" | "error" | "warning" | "info";
@@ -18,6 +18,36 @@ const NotificationToast = ({
   onClose,
   duration = 3000,
 }: NotificationToastProps) => {
+  const [shouldRender, setShouldRender] = useState(isOpen);
+  const [isVisible, setIsVisible] = useState(isOpen);
+  const hideTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (isOpen) {
+      if (hideTimerRef.current !== null) {
+        window.clearTimeout(hideTimerRef.current);
+        hideTimerRef.current = null;
+      }
+
+      setShouldRender(true);
+      const frame = window.requestAnimationFrame(() => {
+        setIsVisible(true);
+      });
+
+      return () => window.cancelAnimationFrame(frame);
+    }
+
+    if (shouldRender) {
+      setIsVisible(false);
+      hideTimerRef.current = window.setTimeout(() => {
+        setShouldRender(false);
+        hideTimerRef.current = null;
+      }, 220);
+    }
+
+    return undefined;
+  }, [isOpen, shouldRender]);
+
   useEffect(() => {
     if (isOpen && duration > 0) {
       const timer = window.setTimeout(() => {
@@ -30,12 +60,25 @@ const NotificationToast = ({
     return undefined;
   }, [isOpen, duration, onClose]);
 
-  if (!isOpen) {
+  useEffect(() => {
+    return () => {
+      if (hideTimerRef.current !== null) {
+        window.clearTimeout(hideTimerRef.current);
+      }
+    };
+  }, []);
+
+  if (!shouldRender) {
     return null;
   }
 
   return (
-    <div className={`notification-toast notification-${type}`} role="status">
+    <div
+      className={`notification-toast notification-${type} ${
+        isVisible ? "notification-toast--open" : "notification-toast--closing"
+      }`}
+      role="status"
+    >
       <p>{message}</p>
       <button
         type="button"

@@ -1,4 +1,6 @@
 .notification-toast {
+  --toast-offset-x: 0;
+  --toast-offset-y: -14px;
   position: fixed;
   top: 1.5rem;
   right: 1.5rem;
@@ -13,6 +15,10 @@
   border: 1px solid rgba(148, 163, 184, 0.35);
   max-width: min(360px, 90vw);
   z-index: 50;
+  opacity: 0;
+  transform: translate3d(var(--toast-offset-x), var(--toast-offset-y), 0)
+    scale(0.96);
+  will-change: opacity, transform;
 }
 
 .notification-toast p {
@@ -62,10 +68,58 @@
   color: #1d4ed8;
 }
 
+.notification-toast--open {
+  animation: toast-in 240ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.notification-toast--closing {
+  animation: toast-out 180ms ease forwards;
+}
+
 @media (max-width: 640px) {
   .notification-toast {
     left: 50%;
     right: auto;
-    transform: translateX(-50%);
+    --toast-offset-x: -50%;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translate3d(var(--toast-offset-x), -18px, 0) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(var(--toast-offset-x), 0, 0) scale(1);
+  }
+}
+
+@keyframes toast-out {
+  from {
+    opacity: 1;
+    transform: translate3d(var(--toast-offset-x), 0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(var(--toast-offset-x), -18px, 0) scale(0.9);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notification-toast {
+    animation: none !important;
+    transform: translate3d(var(--toast-offset-x), 0, 0);
+    opacity: 1;
+  }
+
+  .notification-toast--open {
+    animation: none !important;
+    opacity: 1;
+  }
+
+  .notification-toast--closing {
+    animation: none !important;
+    opacity: 0;
   }
 }
