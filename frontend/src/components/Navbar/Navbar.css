@@ -1,0 +1,261 @@
+.navbarRoot {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  height: 100vh;
+  width: 260px;
+  min-width: 240px;
+  background: #f8fafc;
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  box-shadow: none;
+}
+
+.navbarInner {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2.25rem 1.75rem 2.5rem;
+  width: 100%;
+  height: 100%;
+}
+
+.navbarBrand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+  color: #0f172a;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.navbarBrandMark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.9rem;
+  background: #1d4ed8;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.navbarBrandText {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  font-size: 1.1rem;
+  line-height: 1.1;
+}
+
+.navbarBrandText::after {
+  content: "Panel";
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #64748b;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.burgerIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.navbarNav {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  flex: 1;
+}
+
+.navbarNav ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.navbarNav li a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.8rem;
+  color: #1f2937;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.navbarNav li a::before {
+  content: "";
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 999px;
+  background: #94a3b8;
+  transition: background 0.2s ease;
+}
+
+.navbarNav li a:hover,
+.navbarNav li a:focus-visible {
+  background: rgba(37, 99, 235, 0.12);
+  color: #1d4ed8;
+}
+
+.navbarNav li a:hover::before,
+.navbarNav li a:focus-visible::before {
+  background: #2563eb;
+}
+
+.navbarCta {
+  margin-top: auto;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem 1.15rem;
+  border-radius: 0.9rem;
+  background: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  box-shadow: 0 16px 32px rgba(37, 99, 235, 0.22);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.navbarCta:hover,
+.navbarCta:focus-visible {
+  background: #1d4ed8;
+  box-shadow: 0 18px 36px rgba(29, 78, 216, 0.24);
+}
+
+.navbarToggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  border-radius: 0.9rem;
+  background: #e2e8f0;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.navbarToggle:hover,
+.navbarToggle:focus-visible {
+  background: #cbd5f5;
+}
+
+.navbarOverlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: 30;
+}
+
+@media (max-width: 960px) {
+  .navbarRoot {
+    width: 100%;
+    height: auto;
+    background: #ffffff;
+    border-right: none;
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  }
+
+  .navbarInner {
+    width: min(1100px, 100%);
+    margin: 0 auto;
+    padding: 0.9rem 1.5rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .navbarBrandText::after {
+    display: none;
+  }
+
+  .navbarNav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100vh;
+    width: min(320px, 80vw);
+    padding: 6.5rem 2rem 2.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2.5rem;
+    background: #0f172a;
+    box-shadow: -24px 0 48px rgba(15, 23, 42, 0.45);
+    transform: translateX(100%);
+    transition: transform 0.35s ease;
+    z-index: 40;
+  }
+
+  .navbarNav ul {
+    width: 100%;
+    gap: 1.2rem;
+  }
+
+  .navbarNav li a {
+    width: 100%;
+    color: #e2e8f0;
+    font-size: 1rem;
+    padding-inline: 0;
+    background: transparent;
+  }
+
+  .navbarNav li a::before {
+    background: #475569;
+  }
+
+  .navbarNav li a:hover,
+  .navbarNav li a:focus-visible {
+    background: transparent;
+    color: #60a5fa;
+  }
+
+  .navbarNav li a:hover::before,
+  .navbarNav li a:focus-visible::before {
+    background: #60a5fa;
+  }
+
+  .navbarCta {
+    width: 100%;
+    padding: 0.85rem 1rem;
+    box-shadow: none;
+  }
+
+  .navbarToggle {
+    display: inline-flex;
+  }
+
+  .navbarOverlay {
+    display: block;
+  }
+
+  .navbarNav.isOpen {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .navbarInner {
+    padding-inline: 1rem;
+  }
+
+  .navbarBrandText {
+    font-size: 1rem;
+  }
+}

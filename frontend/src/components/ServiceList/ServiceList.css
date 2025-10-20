@@ -1,0 +1,135 @@
+.service-list {
+  width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.4rem;
+}
+
+.service-list__inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 520px;
+}
+
+.service-list__header-row,
+.service-list__row {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: 1rem;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.service-list__header-row {
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid #e2e8f0;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.service-list__header-cell {
+  color: inherit;
+}
+
+.service-list__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.service-list__row {
+  padding: 0.4rem 0;
+  color: #475569;
+}
+
+.service-list__cell {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.service-list__cell--primary {
+  color: #0f172a;
+  font-weight: 500;
+}
+
+.service-list__pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  background-color: #eef2ff;
+  color: #4338ca;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.service-list__pill--accent {
+  background-color: #ecfeff;
+  color: #0f766e;
+}
+
+.service-list__muted {
+  color: #94a3b8;
+}
+
+.service-list__empty {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .service-list__inner {
+    min-width: 480px;
+  }
+}
+
+@media (max-width: 640px) {
+  .service-list {
+    overflow-x: visible;
+  }
+
+  .service-list__inner {
+    min-width: 0;
+    gap: 0.75rem;
+  }
+
+  .service-list__header-row {
+    display: none;
+  }
+
+  .service-list__body {
+    gap: 0.75rem;
+  }
+
+  .service-list__row {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+    padding: 0.85rem;
+    border-radius: 0.9rem;
+    border: 1px solid #e2e8f0;
+    background-color: #ffffff;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+  }
+
+  .service-list__cell {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .service-list__cell[data-label]::before {
+    content: attr(data-label);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #94a3b8;
+  }
+
+  .service-list__pill {
+    font-size: 0.85rem;
+  }
+}

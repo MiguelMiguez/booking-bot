@@ -1,12 +1,14 @@
 import type { ChangeEvent, FormEvent } from "react";
 import { useState } from "react";
-import type { NewBooking, Service } from "../types";
+import type { NewBooking, Service } from "../../types";
+import "./BookingForm.css";
 
 interface BookingFormProps {
   services: Service[];
   onSubmit: (payload: NewBooking) => Promise<void> | void;
   isSubmitting: boolean;
   error?: string | null;
+  id?: string;
 }
 
 const emptyForm: NewBooking = {
@@ -25,6 +27,7 @@ export const BookingForm = ({
   onSubmit,
   isSubmitting,
   error,
+  id,
 }: BookingFormProps) => {
   const [form, setForm] = useState<NewBooking>(emptyForm);
 
@@ -47,18 +50,18 @@ export const BookingForm = ({
   };
 
   return (
-    <form className="panel form" onSubmit={handleSubmit}>
-      <div className="panel-header">
+    <form className="bookingFormCard" id={id} onSubmit={handleSubmit}>
+      <div className="bookingFormHeader">
         <div>
           <h2>Nuevo turno</h2>
-          <p className="panel-hint">
+          <p className="bookingFormHint">
             Crea turnos manuales para monitorear la disponibilidad del negocio.
           </p>
         </div>
       </div>
 
-      <div className="grid">
-        <label className="field">
+      <div className="bookingFormGrid">
+        <label className="bookingFormField">
           <span>Nombre del cliente</span>
           <input
             name="name"
@@ -71,7 +74,7 @@ export const BookingForm = ({
             disabled={isSubmitting}
           />
         </label>
-        <label className="field">
+        <label className="bookingFormField">
           <span>Teléfono</span>
           <input
             name="phone"
@@ -86,7 +89,7 @@ export const BookingForm = ({
         </label>
       </div>
 
-      <label className="field">
+      <label className="bookingFormField">
         <span>Servicio</span>
         <select
           name="service"
@@ -109,8 +112,8 @@ export const BookingForm = ({
         </select>
       </label>
 
-      <div className="grid">
-        <label className="field">
+      <div className="bookingFormGrid">
+        <label className="bookingFormField">
           <span>Día</span>
           <input
             name="date"
@@ -121,7 +124,7 @@ export const BookingForm = ({
             disabled={isSubmitting}
           />
         </label>
-        <label className="field">
+        <label className="bookingFormField">
           <span>Hora</span>
           <input
             name="time"
@@ -135,9 +138,9 @@ export const BookingForm = ({
         </label>
       </div>
 
-      {error && <p className="error">{error}</p>}
+      {error && <p className="bookingFormError">{error}</p>}
 
-      <div className="actions">
+      <div className="bookingFormActions">
         <button type="submit" disabled={isSubmitting}>
           {isSubmitting ? "Creando..." : "Crear turno"}
         </button>

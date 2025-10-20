@@ -1,10 +1,14 @@
 import "./App.css";
-import Dashboard from "./pages/Dashboard";
+import Navbar from "./components/Navbar/Navbar";
+import Dashboard from "./pages/Dashboard/Dashboard";
 
 const App = () => {
   return (
-    <div className="app-root">
-      <Dashboard />
+    <div className="appShell">
+      <Navbar />
+      <main className="app-root">
+        <Dashboard />
+      </main>
     </div>
   );
 };

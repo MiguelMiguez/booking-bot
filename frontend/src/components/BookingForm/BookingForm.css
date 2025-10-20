@@ -1,0 +1,100 @@
+.bookingFormCard {
+  background-color: #ffffff;
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+  padding: 1.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.bookingFormHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.bookingFormHeader h2 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.bookingFormHint {
+  margin: 0.4rem 0 0;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.bookingFormGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.bookingFormField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: left;
+  color: #0f172a;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.bookingFormField input,
+.bookingFormField select,
+.bookingFormField textarea {
+  border-radius: 0.75rem;
+  border: 1px solid #cbd5f5;
+  padding: 0.75rem 0.9rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #0f172a;
+  background: #f8fafc;
+}
+
+.bookingFormField input:focus,
+.bookingFormField select:focus,
+.bookingFormField textarea:focus {
+  outline: 2px solid #2563eb;
+  outline-offset: 0;
+  border-color: transparent;
+  background: #ffffff;
+}
+
+.bookingFormError {
+  margin: 0;
+  font-weight: 600;
+  color: #dc2626;
+}
+
+.bookingFormActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.bookingFormActions button {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.9rem;
+  padding: 0.75rem 1.25rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.bookingFormActions button:hover:not(:disabled),
+.bookingFormActions button:focus-visible {
+  background: #1d4ed8;
+}
+
+.bookingFormActions button:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
