@@ -9,6 +9,7 @@ interface BookingFormProps {
   isSubmitting: boolean;
   error?: string | null;
   id?: string;
+  className?: string;
 }
 
 const emptyForm: NewBooking = {
@@ -28,6 +29,7 @@ export const BookingForm = ({
   isSubmitting,
   error,
   id,
+  className,
 }: BookingFormProps) => {
   const [form, setForm] = useState<NewBooking>(emptyForm);
 
@@ -54,7 +56,11 @@ export const BookingForm = ({
   };
 
   return (
-    <form className="bookingFormCard" id={id} onSubmit={handleSubmit}>
+    <form
+      className={`bookingFormCard${className ? ` ${className}` : ""}`}
+      id={id}
+      onSubmit={handleSubmit}
+    >
       <div className="bookingFormHeader">
         <div>
           <h2>Nuevo turno</h2>

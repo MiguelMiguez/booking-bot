@@ -4,6 +4,7 @@ import { useAuth } from "./hooks/useAuth";
 import Navbar from "./components/Navbar/Navbar";
 import Dashboard from "./pages/Dashboard/Dashboard";
 import ServicesPage from "./pages/Services/Services";
+import TurnosPage from "./pages/Turnos/Turnos";
 import Login from "./pages/Login/Login";
 
 const App = () => {
@@ -19,6 +20,7 @@ const App = () => {
       <main className="app-root">
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/turnos" element={<TurnosPage />} />
           <Route path="/services" element={<ServicesPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

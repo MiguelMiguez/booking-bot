@@ -13,7 +13,7 @@ interface NavLinkItem {
 
 const NAV_LINKS: NavLinkItem[] = [
   { label: "Dashboard", path: "/", sectionId: "resumen" },
-  { label: "Turnos", path: "/", sectionId: "turnos" },
+  { label: "Turnos", path: "/turnos" },
   { label: "Servicios", path: "/services" },
 ];
 
@@ -85,8 +85,8 @@ const Navbar = () => {
   };
 
   const handleCreateBooking = () => {
-    navigate("/", { state: { section: "turnos" } });
-    setActiveSection("turnos");
+    navigate("/turnos");
+    setActiveSection("services");
     setIsMenuOpen(false);
   };
 

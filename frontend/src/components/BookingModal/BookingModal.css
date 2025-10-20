@@ -1,0 +1,197 @@
+.bookingModalOverlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.5);
+  padding: 1.5rem;
+  z-index: 110;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.bookingModalOverlay.is-visible {
+  pointer-events: auto;
+  animation: booking-modal-overlay-in 260ms ease forwards;
+}
+
+.bookingModalOverlay.is-hidden {
+  pointer-events: none;
+  animation: booking-modal-overlay-out 200ms ease forwards;
+}
+
+.bookingModalCard {
+  width: min(560px, 100%);
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 28px 68px rgba(15, 23, 42, 0.22);
+  padding: 2.2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transform: translate3d(0, 28px, 0) scale(0.94);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.closeIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.bookingModalCard.is-visible {
+  animation: booking-modal-card-in 280ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.bookingModalCard.is-hidden {
+  animation: booking-modal-card-out 200ms ease forwards;
+}
+
+.bookingModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.bookingModalHeader h2 {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.bookingModalHeader p {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.bookingModalClose {
+  border: none;
+  border-radius: 0.9rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #e2e8f0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.bookingModalClose:hover:not(:disabled),
+.bookingModalClose:focus-visible:not(:disabled) {
+  background: rgba(37, 99, 235, 0.18);
+}
+
+.bookingModalClose:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.bookingFormCard--modal {
+  box-shadow: none;
+  padding: 0;
+  background: transparent;
+}
+
+.bookingFormCard--modal .bookingFormHeader h2 {
+  font-size: 1.2rem;
+}
+
+.bookingFormCard--modal .bookingFormActions {
+  justify-content: flex-end;
+}
+
+.bookingFormCard--modal .bookingFormActions button {
+  min-width: 140px;
+}
+
+@media (max-width: 640px) {
+  .bookingModalCard {
+    padding: 1.9rem 1.6rem;
+  }
+
+  .bookingModalHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .bookingModalClose {
+    align-self: flex-end;
+  }
+}
+
+@keyframes booking-modal-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes booking-modal-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes booking-modal-card-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 36px, 0) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes booking-modal-card-out {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, 28px, 0) scale(0.92);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bookingModalOverlay,
+  .bookingModalOverlay.is-visible,
+  .bookingModalOverlay.is-hidden,
+  .bookingModalCard,
+  .bookingModalCard.is-visible,
+  .bookingModalCard.is-hidden {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .bookingModalOverlay {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .bookingModalOverlay.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .bookingModalOverlay.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .bookingModalCard {
+    opacity: 1;
+  }
+}
