@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import CloseIcon from "../../assets/icons/close.svg";
 import NavIco from "../../assets/icons/nav_icon.svg";
+import { useAuth } from "../../hooks/useAuth";
 import "./Navbar.css";
 
 const NAV_LINKS = [
@@ -11,6 +12,8 @@ const NAV_LINKS = [
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { role, logout } = useAuth();
+  const isAdmin = role === "admin";
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -46,6 +49,10 @@ const Navbar = () => {
 
   const closeMenu = () => setIsMenuOpen(false);
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
+  const handleLogout = () => {
+    logout();
+    setIsMenuOpen(false);
+  };
 
   return (
     <header className="navbarRoot">
@@ -79,9 +86,23 @@ const Navbar = () => {
               </li>
             ))}
           </ul>
-          <a className="navbarCta" href="#nuevo-turno" onClick={closeMenu}>
-            Nuevo turno
-          </a>
+          {isAdmin ? (
+            <a className="navbarCta" href="#nuevo-turno" onClick={closeMenu}>
+              Nuevo turno
+            </a>
+          ) : null}
+          <div className="navbarSession">
+            <span className={`navbarRoleBadge${isAdmin ? " isAdmin" : ""}`}>
+              {isAdmin ? "Administrador" : "Operador"}
+            </span>
+            <button
+              type="button"
+              className="navbarLogout"
+              onClick={handleLogout}
+            >
+              Cerrar sesión
+            </button>
+          </div>
         </nav>
 
         <button

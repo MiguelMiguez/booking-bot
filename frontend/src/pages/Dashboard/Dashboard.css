@@ -20,7 +20,7 @@
 .dashboardContentGrid {
   display: grid;
   gap: 1.75rem;
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 2fr);
 }
 
 .dashboardContentGrid > section {
@@ -29,7 +29,8 @@
 
 .dashboardBookingTable,
 .dashboardServiceList,
-.dashboardMetrics {
+.dashboardMetrics,
+.dashboardBookingForm {
   min-width: 0;
 }
 
@@ -85,5 +86,17 @@
 @media (max-width: 640px) {
   .serviceListCard {
     padding: 1.5rem 1.25rem;
+  }
+}
+
+@media (min-width: 960px) {
+  .dashboardContentGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .dashboardBookingTable,
+  .dashboardServiceList,
+  .dashboardMetrics {
+    grid-column: span 2;
   }
 }

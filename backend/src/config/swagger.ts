@@ -36,6 +36,15 @@ const swaggerDocument = {
     },
   ],
   components: {
+    securitySchemes: {
+      ApiKeyAuth: {
+        type: "apiKey",
+        in: "header",
+        name: "x-api-key",
+        description:
+          "Clave del API utilizada para autenticar la solicitud. Define el rol (admin o user) y los permisos disponibles.",
+      },
+    },
     schemas: {
       Booking: {
         type: "object",
@@ -83,6 +92,13 @@ const swaggerDocument = {
           phone: { type: "string" },
         },
         required: ["name", "service", "date", "time", "phone"],
+        example: {
+          name: "Juan Pérez",
+          service: "Corte clásico",
+          date: "2025-10-25",
+          time: "11:30",
+          phone: "+54 9 11 5555-5555",
+        },
       },
       Service: {
         type: "object",
@@ -112,6 +128,12 @@ const swaggerDocument = {
           price: { type: "number" },
         },
         required: ["name"],
+        example: {
+          name: "Limpieza facial",
+          description: "Tratamiento de limpieza profunda con hidratación",
+          durationMinutes: 45,
+          price: 1800,
+        },
       },
       ErrorResponse: {
         type: "object",
@@ -121,11 +143,14 @@ const swaggerDocument = {
       },
     },
   },
+  security: [{ ApiKeyAuth: [] }],
   paths: {
     "/bookings": {
       get: {
         tags: ["Bookings"],
         summary: "Lista todos los turnos registrados",
+        description: "Disponible para roles admin y user.",
+        security: [{ ApiKeyAuth: [] }],
         responses: {
           200: {
             description: "Listado de turnos",
@@ -135,6 +160,14 @@ const swaggerDocument = {
                   type: "array",
                   items: { $ref: "#/components/schemas/Booking" },
                 },
+              },
+            },
+          },
+          401: {
+            description: "Autenticación requerida o clave inválida",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
               },
             },
           },
@@ -151,6 +184,8 @@ const swaggerDocument = {
       post: {
         tags: ["Bookings"],
         summary: "Crea un nuevo turno",
+        description: "Requiere rol admin.",
+        security: [{ ApiKeyAuth: [] }],
         requestBody: {
           required: true,
           content: {
@@ -176,6 +211,22 @@ const swaggerDocument = {
               },
             },
           },
+          401: {
+            description: "Autenticación requerida o clave inválida",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+          403: {
+            description: "Permisos insuficientes (se requiere rol admin)",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
           500: {
             description: "Error inesperado",
             content: {
@@ -191,6 +242,8 @@ const swaggerDocument = {
       delete: {
         tags: ["Bookings"],
         summary: "Elimina un turno existente",
+        description: "Requiere rol admin.",
+        security: [{ ApiKeyAuth: [] }],
         parameters: [
           {
             name: "id",
@@ -220,6 +273,22 @@ const swaggerDocument = {
               },
             },
           },
+          401: {
+            description: "Autenticación requerida o clave inválida",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+          403: {
+            description: "Permisos insuficientes (se requiere rol admin)",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
           500: {
             description: "Error inesperado",
             content: {
@@ -235,6 +304,8 @@ const swaggerDocument = {
       get: {
         tags: ["Services"],
         summary: "Lista los servicios configurados",
+        description: "Disponible para roles admin y user.",
+        security: [{ ApiKeyAuth: [] }],
         responses: {
           200: {
             description: "Listado de servicios",
@@ -244,6 +315,14 @@ const swaggerDocument = {
                   type: "array",
                   items: { $ref: "#/components/schemas/Service" },
                 },
+              },
+            },
+          },
+          401: {
+            description: "Autenticación requerida o clave inválida",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
               },
             },
           },
@@ -260,6 +339,8 @@ const swaggerDocument = {
       post: {
         tags: ["Services"],
         summary: "Crea un nuevo servicio",
+        description: "Requiere rol admin.",
+        security: [{ ApiKeyAuth: [] }],
         requestBody: {
           required: true,
           content: {
@@ -279,6 +360,22 @@ const swaggerDocument = {
           },
           400: {
             description: "Datos inválidos",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+          401: {
+            description: "Autenticación requerida o clave inválida",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+          403: {
+            description: "Permisos insuficientes (se requiere rol admin)",
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ErrorResponse" },
@@ -325,6 +422,7 @@ const swaggerDocument = {
             },
           },
         },
+        security: [],
       },
     },
   },

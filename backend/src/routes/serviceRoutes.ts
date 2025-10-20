@@ -3,10 +3,11 @@ import {
   handleCreateService,
   handleListServices,
 } from "../controllers/serviceController";
+import { authorize } from "../middlewares/authorize";
 
 const router = Router();
 
-router.get("/", handleListServices);
-router.post("/", handleCreateService);
+router.get("/", authorize("admin", "user"), handleListServices);
+router.post("/", authorize("admin"), handleCreateService);
 
 export default router;

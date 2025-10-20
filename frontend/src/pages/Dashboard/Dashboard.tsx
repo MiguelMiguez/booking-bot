@@ -9,6 +9,7 @@ import { DashboardMetrics } from "../../components/DashboardMetrics/DashboardMet
 import { deleteBooking, fetchBookings } from "../../services/bookingService";
 import { fetchServices } from "../../services/serviceService";
 import type { Booking, Service } from "../../types";
+import { useAuth } from "../../hooks/useAuth";
 import "./Dashboard.css";
 
 const Dashboard = () => {
@@ -22,6 +23,9 @@ const Dashboard = () => {
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [serviceError, setServiceError] = useState<string | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
+
+  const { role } = useAuth();
+  const isAdmin = role === "admin";
 
   const loadBookings = useCallback(async () => {
     setIsLoadingBookings(true);
@@ -68,6 +72,10 @@ const Dashboard = () => {
   }, [loadServices]);
 
   const handleDeleteBooking = async (id: string): Promise<void> => {
+    if (!isAdmin) {
+      return;
+    }
+
     setDeletingBookingId(id);
     setNotification(null);
     setBookingError(null);
@@ -131,7 +139,7 @@ const Dashboard = () => {
           <BookingTable
             bookings={bookings}
             isLoading={isLoadingBookings}
-            onDelete={handleDeleteBooking}
+            onDelete={isAdmin ? handleDeleteBooking : undefined}
             deletingId={deletingBookingId}
           />
         </section>

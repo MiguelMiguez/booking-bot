@@ -20,3 +20,5 @@ export interface Service {
 }
 
 export type NewService = Omit<Service, "id" | "createdAt">;
+
+export type UserRole = "admin" | "user";

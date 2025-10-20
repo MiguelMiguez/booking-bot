@@ -5,6 +5,7 @@ import routes from "./routes";
 import { errorHandler } from "./middlewares/errorHandler";
 import { logger } from "./utils/logger";
 import swaggerDocument from "./config/swagger";
+import { authenticate } from "./middlewares/authenticate";
 
 const app = express();
 
@@ -14,7 +15,12 @@ app.use(express.json());
 app.use(
   "/docs",
   swaggerUi.serve,
-  swaggerUi.setup(swaggerDocument, { explorer: true })
+  swaggerUi.setup(swaggerDocument, {
+    explorer: true,
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  })
 );
 app.get("/docs.json", (_req: Request, res: Response) => {
   res.json(swaggerDocument);
@@ -24,7 +30,7 @@ app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "ok" });
 });
 
-app.use("/api", routes);
+app.use("/api", authenticate, routes);
 
 app.use((req: Request, res: Response) => {
   logger.warn(`Ruta no encontrada: ${req.method} ${req.path}`);

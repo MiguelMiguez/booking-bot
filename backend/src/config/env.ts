@@ -11,6 +11,8 @@ interface EnvConfig {
   whatsappEnabled: boolean;
   whatsappSessionPath?: string;
   whatsappBrowserPath?: string;
+  adminApiKey: string;
+  userApiKey: string;
 }
 
 const rawEnv = {
@@ -21,6 +23,8 @@ const rawEnv = {
   WHATSAPP_ENABLED: process.env.WHATSAPP_ENABLED,
   WHATSAPP_SESSION_PATH: process.env.WHATSAPP_SESSION_PATH,
   WHATSAPP_BROWSER_PATH: process.env.WHATSAPP_BROWSER_PATH,
+  ADMIN_API_KEY: process.env.ADMIN_API_KEY,
+  USER_API_KEY: process.env.USER_API_KEY,
 };
 
 const sanitizeMultilineSecret = (value: string | undefined): string => {
@@ -30,7 +34,7 @@ const sanitizeMultilineSecret = (value: string | undefined): string => {
 
   const trimmed = value.trim();
   const unquoted =
-    trimmed.startsWith("\"") && trimmed.endsWith("\"")
+    trimmed.startsWith('"') && trimmed.endsWith('"')
       ? trimmed.slice(1, -1)
       : trimmed;
 
@@ -45,21 +49,26 @@ const env: EnvConfig = {
   whatsappEnabled: rawEnv.WHATSAPP_ENABLED === "true",
   whatsappSessionPath: rawEnv.WHATSAPP_SESSION_PATH,
   whatsappBrowserPath: rawEnv.WHATSAPP_BROWSER_PATH,
+  adminApiKey: rawEnv.ADMIN_API_KEY?.trim() ?? "",
+  userApiKey: rawEnv.USER_API_KEY?.trim() ?? "",
 };
 
 const credentialKeys: Array<
   "firebaseProjectId" | "firebaseClientEmail" | "firebasePrivateKey"
 > = ["firebaseProjectId", "firebaseClientEmail", "firebasePrivateKey"];
 
-const credentialEnvMap: Record<typeof credentialKeys[number], string> = {
+const credentialEnvMap: Record<(typeof credentialKeys)[number], string> = {
   firebaseProjectId: "FIREBASE_PROJECT_ID",
   firebaseClientEmail: "FIREBASE_CLIENT_EMAIL",
   firebasePrivateKey: "FIREBASE_PRIVATE_KEY",
 };
 
-const missingCredentialKeys = credentialKeys.filter(
-  (key) => env[key] === ""
-);
+const apiKeyEnvMap: Record<"adminApiKey" | "userApiKey", string> = {
+  adminApiKey: "ADMIN_API_KEY",
+  userApiKey: "USER_API_KEY",
+};
+
+const missingCredentialKeys = credentialKeys.filter((key) => env[key] === "");
 
 const anyCredentialProvided = credentialKeys.some((key) => env[key] !== "");
 
@@ -80,5 +89,15 @@ if (anyCredentialProvided && missingCredentialKeys.length > 0) {
     "No se detectaron credenciales de Firebase. Configura las variables FIREBASE_* o define GOOGLE_APPLICATION_CREDENTIALS."
   );
 }
+
+(
+  Object.entries(apiKeyEnvMap) as Array<["adminApiKey" | "userApiKey", string]>
+).forEach(([key, envName]) => {
+  if (!env[key]) {
+    logger.warn(
+      `Variable de entorno faltante para seguridad del API: ${envName}`
+    );
+  }
+});
 
 export default env;

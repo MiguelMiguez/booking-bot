@@ -45,8 +45,12 @@ export const BookingForm = ({
     if (isSubmitting) {
       return;
     }
-    await onSubmit(form);
-    setForm(emptyForm);
+    try {
+      await onSubmit(form);
+      setForm(emptyForm);
+    } catch {
+      /* el error se maneja en el componente padre */
+    }
   };
 
   return (

@@ -1,3 +1,5 @@
+import { getCurrentApiKey } from "./authStorage";
+
 const detectDefaultBaseUrl = (): string => {
   if (import.meta.env.PROD && typeof window !== "undefined") {
     return `${window.location.origin}/api`;
@@ -11,7 +13,7 @@ const DEFAULT_BASE_URL = detectDefaultBaseUrl();
 const trimTrailingSlash = (value: string): string =>
   value.endsWith("/") ? value.slice(0, -1) : value;
 
-const API_BASE_URL = trimTrailingSlash(
+export const API_BASE_URL = trimTrailingSlash(
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
     (import.meta.env.REACT_APP_API_BASE_URL as string | undefined) ??
     DEFAULT_BASE_URL
@@ -28,6 +30,9 @@ interface RequestOptions<TBody> {
   method?: HttpMethod;
   body?: TBody;
   signal?: AbortSignal;
+  apiKey?: string | null;
+  skipAuth?: boolean;
+  headers?: Record<string, string>;
 }
 
 const parseJson = async (response: Response): Promise<unknown> => {
@@ -43,17 +48,44 @@ const parseJson = async (response: Response): Promise<unknown> => {
   }
 };
 
+export class ApiError extends Error {
+  status: number;
+  payload: unknown;
+
+  constructor(status: number, message: string, payload: unknown) {
+    super(message);
+    this.status = status;
+    this.payload = payload;
+  }
+}
+
 export const request = async <TResponse = unknown, TBody = unknown>(
   path: string,
   options: RequestOptions<TBody> = {}
 ): Promise<TResponse> => {
-  const { method = "GET", body, signal } = options;
+  const {
+    method = "GET",
+    body,
+    signal,
+    apiKey,
+    skipAuth = false,
+    headers: customHeaders,
+  } = options;
+
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...(customHeaders ?? {}),
+  };
+
+  const resolvedApiKey = skipAuth ? null : apiKey ?? getCurrentApiKey();
+
+  if (resolvedApiKey) {
+    headers["x-api-key"] = resolvedApiKey;
+  }
 
   const response = await fetch(buildUrl(path), {
     method,
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers,
     body: body ? JSON.stringify(body) : undefined,
     signal,
   });
@@ -65,7 +97,17 @@ export const request = async <TResponse = unknown, TBody = unknown>(
       data && typeof data === "object" && "error" in data
         ? String((data as { error: unknown }).error)
         : response.statusText || "Error inesperado";
-    throw new Error(message);
+
+    let normalizedMessage = message;
+
+    if (response.status === 401) {
+      normalizedMessage =
+        "Sesión no autorizada. Inicia sesión nuevamente para continuar.";
+    } else if (response.status === 403) {
+      normalizedMessage = "No tenés permisos para realizar esta acción.";
+    }
+
+    throw new ApiError(response.status, normalizedMessage, data);
   }
 
   return data as TResponse;
