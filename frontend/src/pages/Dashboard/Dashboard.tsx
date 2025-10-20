@@ -28,8 +28,8 @@ const Dashboard = () => {
     setBookingError(null);
 
     try {
-      const items = await fetchBookings();
-      setBookings(items);
+  const items = await fetchBookings();
+  setBookings(Array.isArray(items) ? items : []);
     } catch (error) {
       const message =
         error instanceof Error
@@ -46,8 +46,8 @@ const Dashboard = () => {
     setServiceError(null);
 
     try {
-      const items = await fetchServices();
-      setServices(items);
+  const items = await fetchServices();
+  setServices(Array.isArray(items) ? items : []);
     } catch (error) {
       const message =
         error instanceof Error
