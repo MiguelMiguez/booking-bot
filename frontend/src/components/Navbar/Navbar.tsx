@@ -12,7 +12,7 @@ interface NavLinkItem {
 }
 
 const NAV_LINKS: NavLinkItem[] = [
-  { label: "Dashboard", path: "/", sectionId: "resumen" },
+  { label: "Dashboard", path: "/" },
   { label: "Turnos", path: "/turnos" },
   { label: "Servicios", path: "/services" },
 ];
@@ -84,12 +84,6 @@ const Navbar = () => {
     setIsMenuOpen(false);
   };
 
-  const handleCreateBooking = () => {
-    navigate("/turnos");
-    setActiveSection("services");
-    setIsMenuOpen(false);
-  };
-
   const isLinkActive = (link: NavLinkItem): boolean => {
     if (link.path === "/") {
       return (
@@ -138,15 +132,7 @@ const Navbar = () => {
               </li>
             ))}
           </ul>
-          {isAdmin ? (
-            <button
-              type="button"
-              className="navbarCta"
-              onClick={handleCreateBooking}
-            >
-              Nuevo turno
-            </button>
-          ) : null}
+
           <div className="navbarSession">
             <span className={`navbarRoleBadge${isAdmin ? " isAdmin" : ""}`}>
               {isAdmin ? "Administrador" : "Operador"}
