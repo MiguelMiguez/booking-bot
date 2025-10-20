@@ -4,6 +4,9 @@ import {
   ServiceEditorModal,
   type ServiceFormValues,
 } from "../../components/ServiceEditorModal/ServiceEditorModal";
+import NotificationToast, {
+  type NotificationType,
+} from "../../components/NotificationToast/NotificationToast";
 import { useAuth } from "../../hooks/useAuth";
 import {
   createService,
@@ -64,6 +67,27 @@ const ServicesPage = () => {
   const { role } = useAuth();
   const isAdmin = role === "admin";
 
+  const [toast, setToast] = useState<{
+    message: string;
+    type: NotificationType;
+    isOpen: boolean;
+  }>({
+    message: "",
+    type: "info",
+    isOpen: false,
+  });
+
+  const notify = useCallback(
+    (message: string, type: NotificationType = "info") => {
+      setToast({ message, type, isOpen: true });
+    },
+    []
+  );
+
+  const handleCloseToast = useCallback(() => {
+    setToast((prev) => ({ ...prev, isOpen: false }));
+  }, []);
+
   const [services, setServices] = useState<Service[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -88,10 +112,11 @@ const ServicesPage = () => {
           ? err.message
           : "No se pudieron obtener los servicios.";
       setError(message);
+      notify(message, "error");
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [notify]);
 
   useEffect(() => {
     void loadServices();
@@ -141,9 +166,11 @@ const ServicesPage = () => {
         setServices((prev) =>
           [...prev, next].sort((a, b) => a.name.localeCompare(b.name))
         );
+        notify(`${next.name} se agregó correctamente.`, "success");
       } else if (selectedService) {
         const payload = buildUpdatePayload(values, selectedService);
         if (Object.keys(payload).length === 0) {
+          notify("No se realizaron modificaciones en el servicio.", "info");
           closeModal();
           return;
         }
@@ -153,6 +180,7 @@ const ServicesPage = () => {
             .map((service) => (service.id === updated.id ? updated : service))
             .sort((a, b) => a.name.localeCompare(b.name))
         );
+        notify(`${updated.name} se guardó correctamente.`, "success");
       }
 
       closeModal();
@@ -160,6 +188,7 @@ const ServicesPage = () => {
       const message =
         err instanceof Error ? err.message : "No se pudo guardar el servicio.";
       setModalError(message);
+      notify(message, "error");
     } finally {
       setIsSubmitting(false);
     }
@@ -183,10 +212,12 @@ const ServicesPage = () => {
     try {
       await deleteService(service.id);
       setServices((prev) => prev.filter((item) => item.id !== service.id));
+      notify(`${service.name} se eliminó correctamente.`, "success");
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "No se pudo eliminar el servicio.";
       setError(message);
+      notify(message, "error");
     } finally {
       setDeletingId(null);
     }
@@ -208,6 +239,12 @@ const ServicesPage = () => {
 
   return (
     <div className="servicesPage">
+      <NotificationToast
+        message={toast.message}
+        type={toast.type}
+        isOpen={toast.isOpen}
+        onClose={handleCloseToast}
+      />
       <header className="servicesHeader">
         <div>
           <h1>Servicios</h1>
