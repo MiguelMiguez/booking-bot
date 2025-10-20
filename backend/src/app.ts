@@ -1,4 +1,4 @@
-import cors from "cors";
+import cors, { type CorsOptions } from "cors";
 import express, { type Request, type Response } from "express";
 import swaggerUi from "swagger-ui-express";
 import routes from "./routes";
@@ -9,7 +9,15 @@ import { authenticate } from "./middlewares/authenticate";
 
 const app = express();
 
-app.use(cors());
+const corsOptions: CorsOptions = {
+  origin: true,
+  methods: ["GET", "POST", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "x-api-key"],
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(express.json());
 
 app.use(

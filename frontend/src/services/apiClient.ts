@@ -83,7 +83,13 @@ export const request = async <TResponse = unknown, TBody = unknown>(
     headers["x-api-key"] = resolvedApiKey;
   }
 
-  const response = await fetch(buildUrl(path), {
+  const requestUrl = new URL(buildUrl(path));
+
+  if (resolvedApiKey) {
+    requestUrl.searchParams.set("apiKey", resolvedApiKey);
+  }
+
+  const response = await fetch(requestUrl.toString(), {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
