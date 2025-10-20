@@ -5,6 +5,7 @@ import {
   DashboardHeader,
   type DashboardHeaderStat,
 } from "../../components/DashboardHeader/DashboardHeader";
+import { DashboardMetrics } from "../../components/DashboardMetrics/DashboardMetrics";
 import { deleteBooking, fetchBookings } from "../../services/bookingService";
 import { fetchServices } from "../../services/serviceService";
 import type { Booking, Service } from "../../types";
@@ -158,10 +159,12 @@ const Dashboard = () => {
           </div>
         </section>
 
-        <section className="dashboardMetricsSlot">
-          <div className="dashboardPlaceholderCard">
-            <p>Módulo de métricas disponible próximamente.</p>
-          </div>
+        <section className="dashboardMetrics" id="metricas">
+          <DashboardMetrics
+            bookings={bookings}
+            services={services}
+            isLoading={isLoadingBookings || isLoadingServices}
+          />
         </section>
       </div>
     </div>

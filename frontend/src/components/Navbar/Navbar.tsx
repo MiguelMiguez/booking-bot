@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import CloseIcon from "../../assets/icons/close.svg";
 import NavIco from "../../assets/icons/nav_icon.svg";
 import "./Navbar.css";
 
@@ -61,6 +62,14 @@ const Navbar = () => {
           className={`navbarNav${isMenuOpen ? " isOpen" : ""}`}
           aria-label="Principal"
         >
+          <button
+            type="button"
+            className="navbarClose"
+            onClick={closeMenu}
+            aria-label="Cerrar menú"
+          >
+            <img src={CloseIcon} alt="" aria-hidden="true" />
+          </button>
           <ul>
             {NAV_LINKS.map((link) => (
               <li key={link.href}>

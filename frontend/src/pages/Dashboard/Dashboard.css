@@ -29,7 +29,7 @@
 
 .dashboardBookingTable,
 .dashboardServiceList,
-.dashboardMetricsSlot {
+.dashboardMetrics {
   min-width: 0;
 }
 
@@ -80,47 +80,6 @@
   margin: 0;
   font-weight: 600;
   color: #dc2626;
-}
-
-.dashboardMetricsSlot {
-  display: none;
-}
-
-.dashboardPlaceholderCard {
-  border-radius: 18px;
-  border: 2px dashed #cbd5f5;
-  background: #f8fafc;
-  color: #94a3b8;
-  min-height: 280px;
-  width: 100%;
-  padding: 1.85rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  font-weight: 600;
-}
-
-@media (min-width: 1024px) {
-  .dashboardContentGrid {
-    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    align-items: start;
-  }
-
-  .dashboardBookingTable {
-    grid-column: 1 / -1;
-  }
-
-  .dashboardServiceList {
-    grid-column: 1;
-    grid-row: 2;
-  }
-
-  .dashboardMetricsSlot {
-    display: block;
-    grid-column: 2;
-    grid-row: 2;
-  }
 }
 
 @media (max-width: 640px) {
