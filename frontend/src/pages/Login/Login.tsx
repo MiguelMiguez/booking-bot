@@ -7,6 +7,8 @@ import {
 } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import type { UserRole } from "../../types";
+import EyeIcon from "../../assets/icons/eye.svg";
+import EyeOffIcon from "../../assets/icons/eye-off.svg";
 import "./Login.css";
 
 interface FormState {
@@ -40,6 +42,7 @@ const Login = () => {
   const [form, setForm] = useState<FormState>(initialForm);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showApiKey, setShowApiKey] = useState(false);
   const isMounted = useRef(true);
 
   useEffect(() => {
@@ -127,16 +130,32 @@ const Login = () => {
 
           <label className="loginField">
             <span>Clave de API</span>
-            <input
-              name="apiKey"
-              type="password"
-              autoComplete="current-password"
-              placeholder="Ingresa la clave suministrada"
-              value={form.apiKey}
-              onChange={handleChange}
-              disabled={isSubmitting}
-              required
-            />
+            <div className="loginPasswordWrapper">
+              <input
+                name="apiKey"
+                type={showApiKey ? "text" : "password"}
+                autoComplete="current-password"
+                placeholder="Ingresa la clave suministrada"
+                value={form.apiKey}
+                onChange={handleChange}
+                disabled={isSubmitting}
+                required
+              />
+              <button
+                type="button"
+                className="loginToggleVisibility"
+                onClick={() => setShowApiKey((prev) => !prev)}
+                aria-label={showApiKey ? "Ocultar clave" : "Mostrar clave"}
+                aria-pressed={showApiKey}
+                disabled={isSubmitting}
+              >
+                <img
+                  src={showApiKey ? EyeOffIcon : EyeIcon}
+                  alt=""
+                  aria-hidden="true"
+                />
+              </button>
+            </div>
           </label>
 
           <label className="loginCheckbox">

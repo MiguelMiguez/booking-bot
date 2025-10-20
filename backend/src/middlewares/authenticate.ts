@@ -32,6 +32,11 @@ export const authenticate = (
   res: Response,
   next: NextFunction
 ): void => {
+  if (req.method === "OPTIONS") {
+    next();
+    return;
+  }
+
   const apiKeyHeader = req.header("x-api-key");
   const apiKeyQuery =
     typeof req.query.apiKey === "string" ? req.query.apiKey : undefined;
