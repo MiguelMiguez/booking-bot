@@ -13,3 +13,17 @@ export const createService = async (payload: NewService): Promise<Service> => {
     body: payload,
   });
 };
+
+export const updateService = async (
+  id: string,
+  payload: Partial<NewService>
+): Promise<Service> => {
+  return request<Service, Partial<NewService>>(`${RESOURCE}/${id}`, {
+    method: "PUT",
+    body: payload,
+  });
+};
+
+export const deleteService = async (id: string): Promise<void> => {
+  await request<void>(`${RESOURCE}/${id}`, { method: "DELETE" });
+};

@@ -1,19 +1,29 @@
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import CloseIcon from "../../assets/icons/close.svg";
 import NavIco from "../../assets/icons/nav_icon.svg";
 import { useAuth } from "../../hooks/useAuth";
 import "./Navbar.css";
 
-const NAV_LINKS = [
-  { label: "Dashboard", href: "#resumen" },
-  { label: "Turnos", href: "#turnos" },
-  { label: "Servicios", href: "#servicios" },
+interface NavLinkItem {
+  label: string;
+  path: string;
+  sectionId?: string;
+}
+
+const NAV_LINKS: NavLinkItem[] = [
+  { label: "Dashboard", path: "/", sectionId: "resumen" },
+  { label: "Turnos", path: "/", sectionId: "turnos" },
+  { label: "Servicios", path: "/services" },
 ];
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState<string>("resumen");
   const { role, logout } = useAuth();
   const isAdmin = role === "admin";
+  const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -54,6 +64,42 @@ const Navbar = () => {
     setIsMenuOpen(false);
   };
 
+  useEffect(() => {
+    if (location.pathname !== "/") {
+      setActiveSection("services");
+      return;
+    }
+
+    setActiveSection((prev) => (prev === "services" ? "resumen" : prev));
+  }, [location.pathname]);
+
+  const handleNavigate = (link: NavLinkItem) => {
+    const state = link.sectionId ? { section: link.sectionId } : undefined;
+    navigate(link.path, { state });
+    if (link.path === "/") {
+      setActiveSection(link.sectionId ?? "resumen");
+    } else {
+      setActiveSection("services");
+    }
+    setIsMenuOpen(false);
+  };
+
+  const handleCreateBooking = () => {
+    navigate("/", { state: { section: "turnos" } });
+    setActiveSection("turnos");
+    setIsMenuOpen(false);
+  };
+
+  const isLinkActive = (link: NavLinkItem): boolean => {
+    if (link.path === "/") {
+      return (
+        location.pathname === "/" &&
+        activeSection === (link.sectionId ?? "resumen")
+      );
+    }
+    return location.pathname.startsWith(link.path);
+  };
+
   return (
     <header className="navbarRoot">
       <div className="navbarInner">
@@ -79,17 +125,27 @@ const Navbar = () => {
           </button>
           <ul>
             {NAV_LINKS.map((link) => (
-              <li key={link.href}>
-                <a href={link.href} onClick={closeMenu}>
+              <li key={`${link.path}-${link.sectionId ?? "root"}`}>
+                <button
+                  type="button"
+                  className={`navbarLink${
+                    isLinkActive(link) ? " isActive" : ""
+                  }`}
+                  onClick={() => handleNavigate(link)}
+                >
                   {link.label}
-                </a>
+                </button>
               </li>
             ))}
           </ul>
           {isAdmin ? (
-            <a className="navbarCta" href="#nuevo-turno" onClick={closeMenu}>
+            <button
+              type="button"
+              className="navbarCta"
+              onClick={handleCreateBooking}
+            >
               Nuevo turno
-            </a>
+            </button>
           ) : null}
           <div className="navbarSession">
             <span className={`navbarRoleBadge${isAdmin ? " isAdmin" : ""}`}>

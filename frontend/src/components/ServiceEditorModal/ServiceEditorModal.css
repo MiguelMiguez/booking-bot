@@ -1,0 +1,174 @@
+.serviceEditorOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  padding: 1.5rem;
+}
+
+.serviceEditorCard {
+  width: min(520px, 100%);
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 28px 60px rgba(15, 23, 42, 0.18);
+  padding: 2.25rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.serviceEditorHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.serviceEditorHeader h2 {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.serviceEditorHeader p {
+  margin: 0.35rem 0 0;
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.serviceEditorClose {
+  border: none;
+  border-radius: 0.9rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  background: #e2e8f0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.closeButton {
+  width: 24px;
+  height: 24px;
+}
+
+.serviceEditorClose:hover,
+.serviceEditorClose:focus-visible {
+  background: rgba(37, 99, 235, 0.18);
+}
+
+.serviceEditorClose:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.serviceEditorForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.serviceEditorField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.serviceEditorField span {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.serviceEditorField input,
+.serviceEditorField textarea {
+  border: 1px solid #cbd5f5;
+  border-radius: 0.9rem;
+  padding: 0.7rem 0.85rem;
+  font-size: 1rem;
+  resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.serviceEditorField input:focus,
+.serviceEditorField textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+}
+
+.serviceEditorGrid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.serviceEditorError {
+  margin: 0;
+  padding: 0.75rem 0.9rem;
+  border-radius: 0.85rem;
+  background: rgba(220, 38, 38, 0.12);
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.serviceEditorActions {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.serviceEditorActions button {
+  border: none;
+  border-radius: 0.9rem;
+  padding: 0.75rem 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
+}
+
+.serviceEditorActions button[type="submit"] {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #ffffff;
+}
+
+.serviceEditorActions button[type="submit"]:hover:not(:disabled),
+.serviceEditorActions button[type="submit"]:focus-visible:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 32px rgba(29, 78, 216, 0.28);
+}
+
+.serviceEditorCancel {
+  background: #f1f5f9;
+  color: #1f2937;
+}
+
+.serviceEditorCancel:hover,
+.serviceEditorCancel:focus-visible {
+  background: rgba(148, 163, 184, 0.35);
+}
+
+.serviceEditorActions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+@media (max-width: 520px) {
+  .serviceEditorCard {
+    padding: 1.85rem 1.5rem;
+  }
+
+  .serviceEditorGrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

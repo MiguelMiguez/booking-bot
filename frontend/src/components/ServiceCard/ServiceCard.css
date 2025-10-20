@@ -1,0 +1,141 @@
+.serviceCard {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.08);
+}
+
+.serviceCardIcon {
+  flex-shrink: 0;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 1.2rem;
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.16),
+    rgba(37, 99, 235, 0.05)
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #1d4ed8;
+}
+
+.serviceCardContent {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.serviceCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+.serviceCardHeader h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.serviceCardMeta {
+  display: flex;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+.serviceCardMeta li::before {
+  content: "•";
+  margin-right: 0.4rem;
+  color: #94a3b8;
+}
+
+.serviceCardMeta li:first-child::before {
+  content: "";
+  margin-right: 0;
+}
+
+.serviceCardDescription {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #475569;
+}
+
+.serviceCardActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.serviceCardAction {
+  border: none;
+  border-radius: 0.85rem;
+  width: 2.4rem;
+  height: 2.4rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #e2e8f0;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.serviceCardAction img {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.serviceCardAction:hover,
+.serviceCardAction:focus-visible {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.serviceCardAction:hover img,
+.serviceCardAction:focus-visible img {
+  filter: brightness(0) invert(1);
+}
+
+.serviceCardAction.isDanger:hover,
+.serviceCardAction.isDanger:focus-visible {
+  background: #dc2626;
+}
+
+.serviceCardAction:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 640px) {
+  .serviceCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .serviceCardHeader {
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+
+  .serviceCardActions {
+    align-self: flex-end;
+  }
+}

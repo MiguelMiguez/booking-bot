@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { BookingTable } from "../../components/BookingTable/BookingTable";
 import { ServiceList } from "../../components/ServiceList/ServiceList";
 import {
@@ -13,6 +14,8 @@ import { useAuth } from "../../hooks/useAuth";
 import "./Dashboard.css";
 
 const Dashboard = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [services, setServices] = useState<Service[]>([]);
   const [isLoadingBookings, setIsLoadingBookings] = useState(true);
@@ -70,6 +73,17 @@ const Dashboard = () => {
   useEffect(() => {
     void loadServices();
   }, [loadServices]);
+
+  useEffect(() => {
+    const state = location.state as { section?: string } | null;
+    if (state?.section) {
+      const element = document.getElementById(state.section);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, navigate]);
 
   const handleDeleteBooking = async (id: string): Promise<void> => {
     if (!isAdmin) {

@@ -80,17 +80,17 @@
   border-radius: 0.75rem;
   background: transparent;
   cursor: pointer;
-  transition: background 0.2s ease;
 }
 
 .navbarClose img {
-  width: 22px;
-  height: 22px;
+  display: block;
+  width: 20px;
+  height: 20px;
 }
 
 .navbarClose:focus-visible {
   outline: 2px solid #60a5fa;
-  outline-offset: 2px;
+  outline-offset: 3px;
 }
 
 .navbarNav ul {
@@ -102,7 +102,7 @@
   gap: 0.5rem;
 }
 
-.navbarNav li a {
+.navbarNav li .navbarLink {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -112,10 +112,15 @@
   font-size: 0.95rem;
   font-weight: 600;
   text-decoration: none;
+  background: transparent;
+  border: none;
+  width: 100%;
+  text-align: left;
   transition: background 0.2s ease, color 0.2s ease;
+  cursor: pointer;
 }
 
-.navbarNav li a::before {
+.navbarNav li .navbarLink::before {
   content: "";
   width: 0.55rem;
   height: 0.55rem;
@@ -124,14 +129,16 @@
   transition: background 0.2s ease;
 }
 
-.navbarNav li a:hover,
-.navbarNav li a:focus-visible {
+.navbarNav li .navbarLink:hover,
+.navbarNav li .navbarLink:focus-visible,
+.navbarNav li .navbarLink.isActive {
   background: rgba(37, 99, 235, 0.12);
   color: #1d4ed8;
 }
 
-.navbarNav li a:hover::before,
-.navbarNav li a:focus-visible::before {
+.navbarNav li .navbarLink:hover::before,
+.navbarNav li .navbarLink:focus-visible::before,
+.navbarNav li .navbarLink.isActive::before {
   background: #2563eb;
 }
 
@@ -288,26 +295,29 @@
     gap: 1.2rem;
   }
 
-  .navbarNav li a {
+  .navbarNav li .navbarLink {
+    border: none;
     width: 100%;
+    background: transparent;
     color: #e2e8f0;
     font-size: 1rem;
     padding-inline: 0;
-    background: transparent;
   }
 
-  .navbarNav li a::before {
+  .navbarNav li .navbarLink::before {
     background: #475569;
   }
 
-  .navbarNav li a:hover,
-  .navbarNav li a:focus-visible {
+  .navbarNav li .navbarLink:hover,
+  .navbarNav li .navbarLink:focus-visible,
+  .navbarNav li .navbarLink.isActive {
     background: transparent;
     color: #60a5fa;
   }
 
-  .navbarNav li a:hover::before,
-  .navbarNav li a:focus-visible::before {
+  .navbarNav li .navbarLink:hover::before,
+  .navbarNav li .navbarLink:focus-visible::before,
+  .navbarNav li .navbarLink.isActive::before {
     background: #60a5fa;
   }
 

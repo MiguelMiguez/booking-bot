@@ -1,4 +1,7 @@
-import type { QueryDocumentSnapshot } from "firebase-admin/firestore";
+import type {
+  QueryDocumentSnapshot,
+  DocumentReference,
+} from "firebase-admin/firestore";
 import { getFirestore } from "../config/firebase";
 import { CreateServiceInput, Service } from "../models/service";
 import { HttpError } from "../utils/httpError";
@@ -7,19 +10,28 @@ const SERVICES_COLLECTION = "services";
 
 type ServiceDocument = CreateServiceInput & { createdAt: string };
 
-export const listServices = async (): Promise<Service[]> => {
-  const db = getFirestore();
-  const snapshot = await db
-    .collection(SERVICES_COLLECTION)
-    .orderBy("name")
-    .get();
+const getCollection = () => getFirestore().collection(SERVICES_COLLECTION);
 
-  return snapshot.docs.map(
-    (doc: QueryDocumentSnapshot): Service => ({
-      id: doc.id,
-      ...(doc.data() as ServiceDocument),
-    })
-  );
+const getDocumentRef = (id: string): DocumentReference => {
+  if (!id) {
+    throw new HttpError(
+      400,
+      "Se requiere un identificador de servicio válido."
+    );
+  }
+
+  return getCollection().doc(id);
+};
+
+const mapSnapshotToService = (doc: QueryDocumentSnapshot): Service => ({
+  id: doc.id,
+  ...(doc.data() as ServiceDocument),
+});
+
+export const listServices = async (): Promise<Service[]> => {
+  const snapshot = await getCollection().orderBy("name").get();
+
+  return snapshot.docs.map(mapSnapshotToService);
 };
 
 export const createService = async (
@@ -29,16 +41,54 @@ export const createService = async (
     throw new HttpError(400, "El servicio debe tener un nombre.");
   }
 
-  const db = getFirestore();
   const document: ServiceDocument = {
     ...payload,
     createdAt: new Date().toISOString(),
   };
 
-  const docRef = await db.collection(SERVICES_COLLECTION).add(document);
+  const docRef = await getCollection().add(document);
 
   return {
     id: docRef.id,
     ...document,
   };
+};
+
+export const updateService = async (
+  id: string,
+  payload: Partial<CreateServiceInput>
+): Promise<Service> => {
+  const docRef = getDocumentRef(id);
+  const doc = await docRef.get();
+
+  if (!doc.exists) {
+    throw new HttpError(404, "El servicio solicitado no existe.");
+  }
+
+  if (Object.keys(payload).length === 0) {
+    throw new HttpError(400, "No se recibieron cambios para actualizar.");
+  }
+
+  await docRef.update(payload);
+  const updatedDoc = await docRef.get();
+
+  if (!updatedDoc.exists) {
+    throw new HttpError(404, "El servicio actualizado no se encontró.");
+  }
+
+  return {
+    id: updatedDoc.id,
+    ...(updatedDoc.data() as ServiceDocument),
+  };
+};
+
+export const deleteService = async (id: string): Promise<void> => {
+  const docRef = getDocumentRef(id);
+  const doc = await docRef.get();
+
+  if (!doc.exists) {
+    throw new HttpError(404, "El servicio solicitado no existe.");
+  }
+
+  await docRef.delete();
 };
