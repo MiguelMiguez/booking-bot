@@ -4,3 +4,4 @@ coverage/
 dist/
 .wwebjs_auth/
 .wwebjs_cache/
+google-credentials.json

@@ -1,6 +1,7 @@
 import path from "node:path";
 import qrcode from "qrcode-terminal";
 import { Client, LocalAuth, Message } from "whatsapp-web.js";
+import { registerMessageListener } from "./messageRouter";
 import env from "../config/env";
 import {
   createBooking,
@@ -465,17 +466,32 @@ export const startWhatsappBot = (): Client => {
   }
 
   const sessionPath = resolveSessionPath();
+
+  const puppeteerArgs: string[] = [];
+  if (process.platform !== "win32") {
+    puppeteerArgs.push("--no-sandbox", "--disable-setuid-sandbox");
+  }
+
   const puppeteerOptions = {
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    headless: env.whatsappHeadless,
+    args: puppeteerArgs,
     executablePath: env.whatsappBrowserPath,
   };
+
+  const headlessFlag = String(puppeteerOptions.headless);
+  const executable = puppeteerOptions.executablePath ?? "(por defecto)";
+  logger.info(
+    `Configuración WhatsApp: headless=${headlessFlag}, sessionPath=${sessionPath}, executablePath=${executable}`
+  );
 
   client = new Client({
     authStrategy: new LocalAuth({
       dataPath: sessionPath,
     }),
     puppeteer: puppeteerOptions,
+    webVersionCache: {
+      type: "none",
+    },
   });
 
   client.on("qr", (qr: string) => {
@@ -491,6 +507,14 @@ export const startWhatsappBot = (): Client => {
     logger.info("Autenticación de WhatsApp completada.");
   });
 
+  client.on("change_state", (state: string) => {
+    logger.info(`Estado de WhatsApp actualizado: ${state}`);
+  });
+
+  client.on("loading_screen", (percent: number, message: string) => {
+    logger.info(`Pantalla de carga WhatsApp: ${percent}% - ${message}`);
+  });
+
   client.on("auth_failure", (message: string) => {
     logger.error("Falló la autenticación con WhatsApp", message);
   });
@@ -504,15 +528,44 @@ export const startWhatsappBot = (): Client => {
     });
   });
 
-  client.on("message", (message: Message) => {
-    void handleIncomingMessage(message);
+  client.on("error", (error: unknown) => {
+    logger.error("Error del cliente de WhatsApp", error);
   });
+
+  client.on("browserPage", (page) => {
+    logger.info("Página de WhatsApp detectada, habilitando escuchas del navegador.");
+    page.on("pageerror", (error) => {
+      logger.error("Error en la página de WhatsApp", error);
+    });
+
+    page.on("error", (error) => {
+      logger.error("Fallo en el navegador de WhatsApp", error);
+    });
+
+    page.on("console", (message) => {
+      const entry = `${message.type()} :: ${message.text()}`;
+      if (message.type() === "error") {
+        logger.error(`WhatsApp (console error): ${entry}`);
+        return;
+      }
+
+      logger.info(`WhatsApp (console): ${entry}`);
+    });
+  });
+
+  client.on("remote_session_saved", () => {
+    logger.info("Sesión remota de WhatsApp guardada correctamente.");
+  });
+
+  /* client.on("message", (message: Message) => {
+    void handleIncomingMessage(message);
+  }); */
+
+  registerMessageListener(client);
 
   client
     .initialize()
-    .then(() => {
-      logger.info("Cliente de WhatsApp inicializado.");
-    })
+    .then(() => logger.info("Cliente de WhatsApp inicializado."))
     .catch((error: unknown) => {
       logger.error("No se pudo inicializar el cliente de WhatsApp", error);
     });

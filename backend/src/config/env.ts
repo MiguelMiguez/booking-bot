@@ -11,6 +11,7 @@ interface EnvConfig {
   whatsappEnabled: boolean;
   whatsappSessionPath?: string;
   whatsappBrowserPath?: string;
+  whatsappHeadless: boolean;
   adminApiKey: string;
   userApiKey: string;
 }
@@ -23,6 +24,7 @@ const rawEnv = {
   WHATSAPP_ENABLED: process.env.WHATSAPP_ENABLED,
   WHATSAPP_SESSION_PATH: process.env.WHATSAPP_SESSION_PATH,
   WHATSAPP_BROWSER_PATH: process.env.WHATSAPP_BROWSER_PATH,
+  WHATSAPP_HEADLESS: process.env.WHATSAPP_HEADLESS,
   ADMIN_API_KEY: process.env.ADMIN_API_KEY,
   USER_API_KEY: process.env.USER_API_KEY,
 };
@@ -49,6 +51,7 @@ const env: EnvConfig = {
   whatsappEnabled: rawEnv.WHATSAPP_ENABLED === "true",
   whatsappSessionPath: rawEnv.WHATSAPP_SESSION_PATH,
   whatsappBrowserPath: rawEnv.WHATSAPP_BROWSER_PATH,
+  whatsappHeadless: rawEnv.WHATSAPP_HEADLESS !== "false",
   adminApiKey: rawEnv.ADMIN_API_KEY?.trim() ?? "",
   userApiKey: rawEnv.USER_API_KEY?.trim() ?? "",
 };
