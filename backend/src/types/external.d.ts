@@ -28,6 +28,16 @@ declare module "whatsapp-web.js" {
     name?: string;
   }
 
+  export interface MessageId {
+    id: string;
+  }
+
+  export interface MessageMedia {
+    data: string;
+    mimetype?: string;
+    filename?: string;
+  }
+
   export interface ClientOptions {
     puppeteer?: {
       headless?: boolean | "new";
@@ -35,6 +45,27 @@ declare module "whatsapp-web.js" {
       args?: string[];
     };
     authStrategy?: LocalAuth;
+    webVersionCache?: {
+      type: "local" | "remote" | "none";
+      path?: string;
+      strict?: boolean;
+      remotePath?: string;
+    };
+    webVersion?: string;
+  }
+
+  export interface WhatsappConsoleMessage {
+    type(): string;
+    text(): string;
+  }
+
+  export interface WhatsappBrowserPage {
+    on(event: "pageerror", listener: (error: unknown) => void): void;
+    on(event: "error", listener: (error: unknown) => void): void;
+    on(
+      event: "console",
+      listener: (message: WhatsappConsoleMessage) => void
+    ): void;
   }
 
   export class Client {
@@ -45,6 +76,14 @@ declare module "whatsapp-web.js" {
     on(event: "auth_failure", listener: (message: string) => void): this;
     on(event: "disconnected", listener: (reason: string) => void): this;
     on(event: "message", listener: (message: Message) => void): this;
+    on(event: "change_state", listener: (state: string) => void): this;
+    on(
+      event: "loading_screen",
+      listener: (percent: number, message: string) => void
+    ): this;
+    on(event: "error", listener: (error: unknown) => void): this;
+    on(event: "browserPage", listener: (page: WhatsappBrowserPage) => void): this;
+    on(event: "remote_session_saved", listener: () => void): this;
     initialize(): Promise<void>;
   }
 
@@ -52,7 +91,11 @@ declare module "whatsapp-web.js" {
     body: string;
     from: string;
     fromMe: boolean;
+    hasMedia: boolean;
+    type?: string;
+    id: MessageId;
     reply(content: string): Promise<void>;
     getContact(): Promise<Contact>;
+    downloadMedia(): Promise<MessageMedia | null>;
   }
 }
