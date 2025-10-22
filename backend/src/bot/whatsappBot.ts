@@ -473,26 +473,68 @@ export const startWhatsappBot = (): Client => {
   }
 
   const puppeteerOptions = {
-    headless: env.whatsappHeadless,
+    // headless: env.whatsappHeadless, // Comenta o cambia esto
+    headless: false, // <--- Cambia a false temporalmente
     args: puppeteerArgs,
-    executablePath: env.whatsappBrowserPath,
+    executablePath: env.whatsappBrowserPath, // Asegúrate que env.whatsappBrowserPath siga comentado en .env
   };
 
-  const headlessFlag = String(puppeteerOptions.headless);
+  const headlessFlag = String(puppeteerOptions.headless); // Se actualizará solo
   const executable = puppeteerOptions.executablePath ?? "(por defecto)";
   logger.info(
     `Configuración WhatsApp: headless=${headlessFlag}, sessionPath=${sessionPath}, executablePath=${executable}`
-  );
+  ); // Log actualizado
 
   client = new Client({
     authStrategy: new LocalAuth({
       dataPath: sessionPath,
     }),
-    puppeteer: puppeteerOptions,
+    puppeteer: puppeteerOptions, // Usa las opciones actualizadas
     webVersionCache: {
-      type: "none",
+      type: "remote",
+      remotePath:
+        "https://raw.githubusercontent.com/guigo613/alternative-wa-version/main/html/2.2412.54.html",
     },
   });
+
+  logger.info("Registrando listeners..."); // <-- Añade esto
+
+  client.on("qr", (qr: string) => {
+    logger.info(
+      "Evento QR recibido. Escanea el código QR para vincular el bot de WhatsApp."
+    ); // Modifica/Añade log
+    qrcode.generate(qr, { small: true });
+  });
+
+  client.on("authenticated", () => {
+    logger.info("Evento AUTHENTICATED recibido. Autenticación completada."); // <-- Añade esto
+  });
+
+  client.on("ready", () => {
+    logger.info("Evento READY recibido. Bot listo para recibir mensajes."); // <-- Añade esto
+  });
+
+  client.on("auth_failure", (message: string) => {
+    logger.error(
+      "Evento AUTH_FAILURE recibido. Falló la autenticación con WhatsApp",
+      message
+    ); // <-- Añade esto
+  });
+
+  client.on("disconnected", (reason: string) => {
+    logger.warn(
+      `Evento DISCONNECTED recibido. Bot desconectado (${reason}). Intentando reconexión...` // <-- Añade esto
+    );
+    client?.initialize().catch((error: unknown) => {
+      logger.error("No se pudo reiniciar el bot de WhatsApp", error);
+    });
+  });
+
+  // ... otros listeners como message, error, browserPage, etc. ...
+
+  logger.info("Listeners registrados. Llamando a initialize()..."); // <-- Añade esto
+  //client.initialize();
+  // ... resto del código
 
   client.on("qr", (qr: string) => {
     logger.info("Escanea el código QR para vincular el bot de WhatsApp.");
@@ -533,7 +575,9 @@ export const startWhatsappBot = (): Client => {
   });
 
   client.on("browserPage", (page) => {
-    logger.info("Página de WhatsApp detectada, habilitando escuchas del navegador.");
+    logger.info(
+      "Página de WhatsApp detectada, habilitando escuchas del navegador."
+    );
     page.on("pageerror", (error) => {
       logger.error("Error en la página de WhatsApp", error);
     });
