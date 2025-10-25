@@ -38,6 +38,14 @@ app.get("/health", (_req: Request, res: Response) => {
   res.json({ status: "ok" });
 });
 
+app.get("/", (_req: Request, res: Response) => {
+  res.json({
+    message: "Booking Bot API",
+    docs: "/docs",
+    health: "/health",
+  });
+});
+
 app.use("/api", authenticate, routes);
 
 app.use((req: Request, res: Response) => {
