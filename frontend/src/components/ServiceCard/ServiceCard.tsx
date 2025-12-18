@@ -1,5 +1,6 @@
 import { Pencil, Trash2 } from "lucide-react";
 import type { Service } from "../../types";
+import { getServiceIcon } from "../../utils/serviceIcons";
 import "./ServiceCard.css";
 
 interface ServiceCardProps {
@@ -25,17 +26,6 @@ const buildServiceMeta = (service: Service): ServiceMeta => {
   return { durationLabel, priceLabel };
 };
 
-const getInitials = (value: string): string => {
-  if (!value) {
-    return "?";
-  }
-
-  const [firstWord] = value.split(" ");
-  return firstWord
-    ? firstWord.charAt(0).toUpperCase()
-    : value.charAt(0).toUpperCase();
-};
-
 export const ServiceCard = ({
   service,
   onEdit,
@@ -45,19 +35,26 @@ export const ServiceCard = ({
   const { durationLabel, priceLabel } = buildServiceMeta(service);
   const canEdit = Boolean(onEdit) && !disabled;
   const canDelete = Boolean(onDelete) && !disabled;
+  const ServiceIcon = getServiceIcon(service.name, service.icon);
 
   return (
     <article className="serviceCard">
       <div className="serviceCardIcon" aria-hidden="true">
-        {getInitials(service.name)}
+        <ServiceIcon size={24} />
       </div>
 
       <div className="serviceCardContent">
         <header className="serviceCardHeader">
           <h3>{service.name}</h3>
           <ul className="serviceCardMeta" aria-label="Detalles del servicio">
-            {durationLabel ? <li>{durationLabel}</li> : null}
-            {priceLabel ? <li>{priceLabel}</li> : null}
+            {durationLabel ? (
+              <span className="service-list__pill">{durationLabel}</span>
+            ) : null}
+            {priceLabel ? (
+              <span className="service-list__pill service-list__pill--accent">
+                {priceLabel}
+              </span>
+            ) : null}
           </ul>
         </header>
         {service.description ? (

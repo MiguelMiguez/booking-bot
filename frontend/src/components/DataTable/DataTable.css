@@ -89,13 +89,13 @@
 }
 
 .dataTableEditBtn:hover:not(:disabled) {
-  background: rgba(37, 99, 235, 0.1);
-  color: #2563eb;
+  background: #2563eb;
+  color: #ffffff;
 }
 
 .dataTableDeleteBtn:hover:not(:disabled) {
-  background: rgba(239, 68, 68, 0.1);
-  color: #ef4444;
+  background: #dc2626;
+  color: #ffffff;
 }
 
 .dataTableSpinner {

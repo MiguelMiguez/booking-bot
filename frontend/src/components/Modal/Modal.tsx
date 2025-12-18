@@ -225,7 +225,7 @@ export const Modal = <T extends Record<string, string>>({
             aria-label="Cerrar"
             disabled={isSubmitting}
           >
-            <X size={20} />
+            <X size={16} />
           </button>
         </header>
 

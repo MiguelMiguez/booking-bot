@@ -16,6 +16,7 @@ export interface Service {
   description?: string;
   durationMinutes?: number;
   price?: number;
+  icon?: string;
   createdAt: string;
 }
 
