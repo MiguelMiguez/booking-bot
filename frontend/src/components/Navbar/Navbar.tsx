@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { X, Menu } from "lucide-react";
+import {
+  X,
+  Menu,
+  LayoutDashboard,
+  CalendarClock,
+  Layers,
+  type LucideIcon,
+} from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import "./Navbar.css";
 
@@ -8,12 +15,13 @@ interface NavLinkItem {
   label: string;
   path: string;
   sectionId?: string;
+  icon: LucideIcon;
 }
 
 const NAV_LINKS: NavLinkItem[] = [
-  { label: "Dashboard", path: "/" },
-  { label: "Turnos", path: "/turnos" },
-  { label: "Servicios", path: "/services" },
+  { label: "Dashboard", path: "/", icon: LayoutDashboard },
+  { label: "Turnos", path: "/turnos", icon: CalendarClock },
+  { label: "Servicios", path: "/services", icon: Layers },
 ];
 
 const Navbar = () => {
@@ -117,19 +125,23 @@ const Navbar = () => {
             <X size={20} />
           </button>
           <ul>
-            {NAV_LINKS.map((link) => (
-              <li key={`${link.path}-${link.sectionId ?? "root"}`}>
-                <button
-                  type="button"
-                  className={`navbarLink${
-                    isLinkActive(link) ? " isActive" : ""
-                  }`}
-                  onClick={() => handleNavigate(link)}
-                >
-                  {link.label}
-                </button>
-              </li>
-            ))}
+            {NAV_LINKS.map((link) => {
+              const Icon = link.icon;
+              return (
+                <li key={`${link.path}-${link.sectionId ?? "root"}`}>
+                  <button
+                    type="button"
+                    className={`navbarLink${
+                      isLinkActive(link) ? " isActive" : ""
+                    }`}
+                    onClick={() => handleNavigate(link)}
+                  >
+                    <Icon size={18} className="navbarLinkIcon" />
+                    {link.label}
+                  </button>
+                </li>
+              );
+            })}
           </ul>
 
           <div className="navbarSession">

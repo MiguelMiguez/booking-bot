@@ -120,13 +120,10 @@
   cursor: pointer;
 }
 
-.navbarNav li .navbarLink::before {
-  content: "";
-  width: 0.55rem;
-  height: 0.55rem;
-  border-radius: 999px;
-  background: #94a3b8;
-  transition: background 0.2s ease;
+.navbarLinkIcon {
+  flex-shrink: 0;
+  color: #64748b;
+  transition: color 0.2s ease;
 }
 
 .navbarNav li .navbarLink:hover,
@@ -136,10 +133,10 @@
   color: #1d4ed8;
 }
 
-.navbarNav li .navbarLink:hover::before,
-.navbarNav li .navbarLink:focus-visible::before,
-.navbarNav li .navbarLink.isActive::before {
-  background: #2563eb;
+.navbarNav li .navbarLink:hover .navbarLinkIcon,
+.navbarNav li .navbarLink:focus-visible .navbarLinkIcon,
+.navbarNav li .navbarLink.isActive .navbarLinkIcon {
+  color: #2563eb;
 }
 
 .navbarCta {
@@ -269,7 +266,7 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 2.5rem;
-    background: #0f172a;
+    background: #ffffff;
     box-shadow: -24px 0 48px rgba(15, 23, 42, 0.151);
     transform: translateX(100%);
     transition: transform 0.35s ease;
@@ -281,7 +278,7 @@
     align-items: center;
     justify-content: center;
     margin-left: auto;
-    background: rgb(148, 163, 184);
+    background: #e2e8f0;
     width: 36px;
     height: 36px;
   }
@@ -300,7 +297,7 @@
     border: none;
     width: 100%;
     background: transparent;
-    color: #e2e8f0;
+    color: #0f172a;
     font-size: 1rem;
     padding-inline: 0;
   }

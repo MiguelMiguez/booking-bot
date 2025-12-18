@@ -16,7 +16,7 @@
 /* Animated background shapes */
 .loginLayout::before,
 .loginLayout::after {
-  content: '';
+  content: "";
   position: absolute;
   border-radius: 50%;
   filter: blur(80px);
@@ -42,7 +42,8 @@
 }
 
 @keyframes float {
-  0%, 100% {
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
   }
   50% {
@@ -58,10 +59,8 @@
   -webkit-backdrop-filter: blur(20px);
   border-radius: 24px;
   padding: 2.5rem;
-  box-shadow: 
-    0 25px 50px -12px rgba(0, 0, 0, 0.25),
-    0 0 0 1px rgba(255, 255, 255, 0.2),
-    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.6);
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -121,21 +120,19 @@
   font-weight: 800;
   font-size: 1.4rem;
   letter-spacing: -1px;
-  box-shadow: 
-    0 10px 30px -5px rgba(102, 126, 234, 0.5),
+  box-shadow: 0 10px 30px -5px rgba(102, 126, 234, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
   animation: pulse 3s ease-in-out infinite;
 }
 
 @keyframes pulse {
-  0%, 100% {
-    box-shadow: 
-      0 10px 30px -5px rgba(102, 126, 234, 0.5),
+  0%,
+  100% {
+    box-shadow: 0 10px 30px -5px rgba(102, 126, 234, 0.5),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
   50% {
-    box-shadow: 
-      0 15px 40px -5px rgba(102, 126, 234, 0.6),
+    box-shadow: 0 15px 40px -5px rgba(102, 126, 234, 0.6),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
 }
@@ -245,7 +242,7 @@
 }
 
 .loginHelper::before {
-  content: '💡';
+  content: "💡";
   font-size: 0.75rem;
 }
 
@@ -277,7 +274,11 @@
   margin: 0;
   padding: 0.875rem 1rem;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.1));
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.1),
+    rgba(220, 38, 38, 0.1)
+  );
   border: 1px solid rgba(239, 68, 68, 0.2);
   color: #dc2626;
   font-weight: 500;
@@ -289,13 +290,27 @@
 }
 
 .loginError::before {
-  content: '⚠️';
+  content: "⚠️";
 }
 
 @keyframes shake {
-  0%, 100% { transform: translateX(0); }
-  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
-  20%, 40%, 60%, 80% { transform: translateX(4px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-4px);
+  }
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(4px);
+  }
 }
 
 /* Submit button */
@@ -316,7 +331,7 @@
 }
 
 .loginForm button[type="submit"]::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
@@ -425,11 +440,11 @@
   .loginCard {
     animation: none;
   }
-  
+
   .loginError {
     animation: none;
   }
-  
+
   .loginForm button[type="submit"]::before {
     display: none;
   }
