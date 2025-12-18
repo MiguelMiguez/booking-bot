@@ -1,6 +1,28 @@
 backend/google-credentials.json
 .env
 
-.firebase
-*.cache
-.firebase/hosting.ZnJvbnRlbmRcZGlzdA.cache
+# Firebase
+.firebase/
+
+# Dependencies
+node_modules/
+
+# Build outputs
+dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+
