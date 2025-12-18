@@ -7,8 +7,7 @@ import {
 } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import type { UserRole } from "../../types";
-import EyeIcon from "../../assets/icons/eye.svg";
-import EyeOffIcon from "../../assets/icons/eye-off.svg";
+import { Eye, EyeOff } from "lucide-react";
 import "./Login.css";
 
 interface FormState {
@@ -149,11 +148,7 @@ const Login = () => {
                 aria-pressed={showApiKey}
                 disabled={isSubmitting}
               >
-                <img
-                  src={showApiKey ? EyeOffIcon : EyeIcon}
-                  alt=""
-                  aria-hidden="true"
-                />
+                {showApiKey ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </label>

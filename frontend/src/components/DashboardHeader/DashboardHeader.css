@@ -4,6 +4,14 @@
   gap: 1.5rem;
 }
 
+.dashboardHeaderTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
 .dashboardHeaderText h1 {
   margin: 0;
   font-size: 2.25rem;
@@ -15,6 +23,49 @@
   margin: 0;
   color: #475569;
   max-width: 640px;
+}
+
+.dashboardHeaderActionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.dashboardHeaderActionBtn.is-primary {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.dashboardHeaderActionBtn.is-primary:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.dashboardHeaderActionBtn.is-secondary {
+  background: #f1f5f9;
+  color: #334155;
+  border: 1px solid #e2e8f0;
+}
+
+.dashboardHeaderActionBtn.is-secondary:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.dashboardHeaderActionBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.containerButtonHeader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .dashboardHeaderStats {

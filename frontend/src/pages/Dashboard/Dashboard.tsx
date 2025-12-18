@@ -1,17 +1,51 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { BookingTable } from "../../components/BookingTable/BookingTable";
+import { DataTable, type DataTableColumn } from "../../components/DataTable";
 import { ServiceList } from "../../components/ServiceList/ServiceList";
 import {
   DashboardHeader,
   type DashboardHeaderStat,
 } from "../../components/DashboardHeader/DashboardHeader";
 import { DashboardMetrics } from "../../components/DashboardMetrics/DashboardMetrics";
-import { deleteBooking, fetchBookings } from "../../services/bookingService";
+import {
+  Modal,
+  type FormField,
+  type ModalConfig,
+} from "../../components/Modal";
+import {
+  deleteBooking,
+  updateBooking,
+  fetchBookings,
+} from "../../services/bookingService";
 import { fetchServices } from "../../services/serviceService";
 import type { Booking, Service } from "../../types";
 import { useAuth } from "../../hooks/useAuth";
 import "./Dashboard.css";
+
+const formatDate = (date: string): string => {
+  if (!date) return "—";
+  const parsed = new Date(date);
+  if (Number.isNaN(parsed.getTime())) return date;
+  return parsed.toLocaleDateString();
+};
+
+const formatTime = (time: string): string => {
+  if (!time) return "—";
+  const [hours, minutes] = time.split(":");
+  if (hours === undefined || minutes === undefined) return time;
+  const date = new Date();
+  date.setHours(Number(hours));
+  date.setMinutes(Number(minutes));
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+};
+
+type BookingFormValues = {
+  name: string;
+  phone: string;
+  service: string;
+  date: string;
+  time: string;
+};
 
 const Dashboard = () => {
   const location = useLocation();
@@ -26,6 +60,12 @@ const Dashboard = () => {
   const [bookingError, setBookingError] = useState<string | null>(null);
   const [serviceError, setServiceError] = useState<string | null>(null);
   const [notification, setNotification] = useState<string | null>(null);
+
+  // Modal state for editing
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [modalError, setModalError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { role } = useAuth();
   const isAdmin = role === "admin";
@@ -109,6 +149,58 @@ const Dashboard = () => {
     }
   };
 
+  const openEditModal = (booking: Booking) => {
+    if (!isAdmin) {
+      return;
+    }
+    setSelectedBooking(booking);
+    setModalError(null);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    if (isSubmitting) {
+      return;
+    }
+    setIsModalOpen(false);
+    setSelectedBooking(null);
+    setModalError(null);
+  };
+
+  const handleEditBooking = async (
+    values: BookingFormValues
+  ): Promise<void> => {
+    if (!isAdmin || !selectedBooking) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setModalError(null);
+
+    try {
+      await updateBooking(selectedBooking.id, {
+        name: values.name,
+        phone: values.phone,
+        service: values.service,
+        date: values.date,
+        time: values.time,
+      });
+      await loadBookings();
+      setNotification("Turno actualizado correctamente.");
+      setIsModalOpen(false);
+      setSelectedBooking(null);
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "No se pudo actualizar el turno.";
+      setModalError(message);
+      throw error;
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const dashboardStats = useMemo<DashboardHeaderStat[]>(() => {
     const today = new Date();
     const upcoming = bookings.filter((booking) => {
@@ -132,6 +224,117 @@ const Dashboard = () => {
     ];
   }, [bookings, services.length]);
 
+  const tableColumns = useMemo<DataTableColumn<Booking>[]>(
+    () => [
+      {
+        field: "date",
+        headerName: "Fecha",
+        flex: 1,
+        minWidth: 140,
+        valueFormatter: (value) => formatDate(value as string),
+      },
+      {
+        field: "time",
+        headerName: "Hora",
+        minWidth: 120,
+        flex: 0.6,
+        valueFormatter: (value) => formatTime(value as string),
+      },
+      {
+        field: "name",
+        headerName: "Cliente",
+        flex: 1,
+        minWidth: 160,
+      },
+      {
+        field: "service",
+        headerName: "Servicio",
+        flex: 1,
+        minWidth: 160,
+      },
+      {
+        field: "phone",
+        headerName: "Contacto",
+        flex: 1,
+        minWidth: 160,
+      },
+    ],
+    []
+  );
+
+  const bookingFormFields = useMemo<FormField[]>(
+    () => [
+      {
+        name: "name",
+        label: "Nombre del cliente",
+        type: "text",
+        placeholder: "Ej: Ana Pérez",
+        required: true,
+        autoComplete: "name",
+      },
+      {
+        name: "phone",
+        label: "Teléfono",
+        type: "tel",
+        placeholder: "Ej: +5491112345678",
+        required: true,
+        autoComplete: "tel",
+      },
+      {
+        name: "service",
+        label: "Servicio",
+        type: "select",
+        required: true,
+        placeholder: "Selecciona un servicio",
+        gridColumn: "full",
+        options: services.map((s) => ({
+          value: s.name,
+          label: `${s.name}${
+            s.durationMinutes ? ` · ${s.durationMinutes} min` : ""
+          }`,
+        })),
+      },
+      {
+        name: "date",
+        label: "Día",
+        type: "date",
+        required: true,
+      },
+      {
+        name: "time",
+        label: "Hora",
+        type: "time",
+        required: true,
+        step: 900,
+      },
+    ],
+    [services]
+  );
+
+  const modalConfig = useMemo<ModalConfig>(
+    () => ({
+      title: "Editar turno",
+      description: "Modifica los datos del turno según sea necesario.",
+      submitLabel: "Guardar cambios",
+      submitLoadingLabel: "Guardando...",
+    }),
+    []
+  );
+
+  const initialModalValues = useMemo<Partial<BookingFormValues> | undefined>(
+    () =>
+      selectedBooking
+        ? {
+            name: selectedBooking.name,
+            phone: selectedBooking.phone,
+            service: selectedBooking.service,
+            date: selectedBooking.date,
+            time: selectedBooking.time,
+          }
+        : undefined,
+    [selectedBooking]
+  );
+
   return (
     <div className="dashboardPage">
       <DashboardHeader
@@ -150,11 +353,31 @@ const Dashboard = () => {
 
       <div className="dashboardContentGrid">
         <section className="dashboardBookingTable">
-          <BookingTable
-            bookings={bookings}
+          <DataTable
+            data={bookings}
+            columns={tableColumns}
+            header={{
+              title: "Turnos registrados",
+              subtitle:
+                "Controla los turnos programados y filtra por fecha, hora o cliente.",
+              badgeCount: bookings.length,
+            }}
+            actions={
+              isAdmin
+                ? {
+                    onEdit: openEditModal,
+                    onDelete: handleDeleteBooking,
+                    editLabel: "Editar turno",
+                    deleteLabel: "Eliminar turno",
+                    deleteConfirmTitle: "Eliminar turno",
+                    deleteConfirmDescription: (booking) =>
+                      `¿Eliminar el turno de ${booking.name} para el servicio ${booking.service} el ${booking.date} a las ${booking.time}?`,
+                  }
+                : undefined
+            }
             isLoading={isLoadingBookings}
-            onDelete={isAdmin ? handleDeleteBooking : undefined}
             deletingId={deletingBookingId}
+            searchPlaceholder="Buscar por fecha, hora o cliente"
           />
         </section>
 
@@ -189,6 +412,17 @@ const Dashboard = () => {
           />
         </section>
       </div>
+
+      <Modal<BookingFormValues>
+        open={isModalOpen}
+        config={modalConfig}
+        fields={bookingFormFields}
+        initialValues={initialModalValues}
+        isSubmitting={isSubmitting}
+        error={modalError}
+        onSubmit={handleEditBooking}
+        onClose={closeModal}
+      />
     </div>
   );
 };

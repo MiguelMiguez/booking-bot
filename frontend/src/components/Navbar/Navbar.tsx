@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import CloseIcon from "../../assets/icons/close.svg";
-import NavIco from "../../assets/icons/nav_icon.svg";
+import { X, Menu } from "lucide-react";
 import { useAuth } from "../../hooks/useAuth";
 import "./Navbar.css";
 
@@ -115,7 +114,7 @@ const Navbar = () => {
             onClick={closeMenu}
             aria-label="Cerrar menú"
           >
-            <img src={CloseIcon} alt="" aria-hidden="true" />
+            <X size={20} />
           </button>
           <ul>
             {NAV_LINKS.map((link) => (
@@ -154,7 +153,7 @@ const Navbar = () => {
           aria-controls="navbarMenu"
           onClick={toggleMenu}
         >
-          <img className="burgerIcon" src={NavIco} alt="Menu" />
+          <Menu size={24} />
         </button>
       </div>
 

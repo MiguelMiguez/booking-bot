@@ -92,9 +92,10 @@
   background: #e2e8f0;
   cursor: pointer;
   transition: background 0.2s ease, transform 0.2s ease;
+  color: #64748b;
 }
 
-.serviceCardAction img {
+.serviceCardAction svg {
   width: 1.1rem;
   height: 1.1rem;
 }
@@ -103,16 +104,13 @@
 .serviceCardAction:focus-visible {
   background: #2563eb;
   transform: translateY(-1px);
-}
-
-.serviceCardAction:hover img,
-.serviceCardAction:focus-visible img {
-  filter: brightness(0) invert(1);
+  color: #ffffff;
 }
 
 .serviceCardAction.isDanger:hover,
 .serviceCardAction.isDanger:focus-visible {
   background: #dc2626;
+  color: #ffffff;
 }
 
 .serviceCardAction:disabled {

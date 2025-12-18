@@ -24,7 +24,7 @@ const buildUrl = (path: string): string => {
   return `${API_BASE_URL}${normalizedPath}`;
 };
 
-type HttpMethod = "GET" | "POST" | "PUT" | "DELETE";
+type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 interface RequestOptions<TBody> {
   method?: HttpMethod;

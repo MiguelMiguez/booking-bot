@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { Plus } from "lucide-react";
 import { ServiceCard } from "../../components/ServiceCard/ServiceCard";
 import {
-  ServiceEditorModal,
-  type ServiceFormValues,
-} from "../../components/ServiceEditorModal/ServiceEditorModal";
+  Modal,
+  type FormField,
+  type ModalConfig,
+} from "../../components/Modal";
+import { DashboardHeader } from "../../components/DashboardHeader/DashboardHeader";
 import NotificationToast, {
   type NotificationType,
 } from "../../components/NotificationToast/NotificationToast";
@@ -18,6 +21,13 @@ import {
 } from "../../services/serviceService";
 import type { NewService, Service } from "../../types";
 import "./Services.css";
+
+type ServiceFormValues = {
+  name: string;
+  description: string;
+  durationMinutes: string;
+  price: string;
+};
 
 const toNumberOrUndefined = (value: string): number | undefined => {
   if (!value) {
@@ -256,6 +266,73 @@ const ServicesPage = () => {
     return null;
   }, [isLoading, services.length, isAdmin]);
 
+  const serviceFormFields = useMemo<FormField[]>(
+    () => [
+      {
+        name: "name",
+        label: "Nombre del servicio",
+        type: "text",
+        placeholder: "Ej: Corte de cabello",
+        required: true,
+        gridColumn: "full",
+      },
+      {
+        name: "description",
+        label: "Descripción",
+        type: "textarea",
+        placeholder: "Describe brevemente el servicio...",
+        gridColumn: "full",
+        rows: 3,
+      },
+      {
+        name: "durationMinutes",
+        label: "Duración (minutos)",
+        type: "number",
+        placeholder: "Ej: 30",
+        min: 1,
+      },
+      {
+        name: "price",
+        label: "Precio",
+        type: "number",
+        placeholder: "Ej: 5000",
+        min: 0,
+      },
+    ],
+    []
+  );
+
+  const modalConfig = useMemo<ModalConfig>(
+    () => ({
+      title: modalMode === "create" ? "Agregar servicio" : "Editar servicio",
+      description:
+        "Define los detalles del servicio, incluyendo duración estimada y precio de referencia.",
+      submitLabel: modalMode === "create" ? "Crear" : "Guardar",
+      submitLoadingLabel:
+        modalMode === "create" ? "Creando..." : "Guardando...",
+    }),
+    [modalMode]
+  );
+
+  const initialModalValues = useMemo<Partial<ServiceFormValues> | undefined>(
+    () =>
+      selectedService
+        ? {
+            name: selectedService.name,
+            description: selectedService.description ?? "",
+            durationMinutes:
+              selectedService.durationMinutes !== undefined
+                ? String(selectedService.durationMinutes)
+                : "",
+            price:
+              selectedService.price !== undefined
+                ? String(selectedService.price)
+                : "",
+          }
+        : undefined,
+    [selectedService]
+  );
+
   return (
     <div className="servicesPage">
       <NotificationToast
@@ -264,23 +341,18 @@ const ServicesPage = () => {
         isOpen={toast.isOpen}
         onClose={handleCloseToast}
       />
-      <header className="servicesHeader">
-        <div>
-          <h1>Servicios</h1>
-          <p>
-            Administra el catálogo que se utiliza en el bot y en el panel.
-            Actualiza duraciones, precios y descripciones desde aquí.
-          </p>
-        </div>
-        <button
-          type="button"
-          className="servicesHeaderButton"
-          onClick={openCreateModal}
-          disabled={!isAdmin}
-        >
-          Agregar servicio
-        </button>
-      </header>
+
+      <DashboardHeader
+        title="Servicios"
+        subtitle="Administra el catálogo que se utiliza en el bot y en el panel. Actualiza duraciones, precios y descripciones desde aquí."
+        showAction={isAdmin}
+        action={{
+          label: "Agregar servicio",
+          icon: Plus,
+          onClick: openCreateModal,
+          disabled: !isAdmin,
+        }}
+      />
 
       {error ? <p className="servicesError">{error}</p> : null}
 
@@ -305,10 +377,11 @@ const ServicesPage = () => {
         onConfirm={handleConfirmDelete}
       />
 
-      <ServiceEditorModal
+      <Modal<ServiceFormValues>
         open={isModalOpen}
-        mode={modalMode}
-        initialService={selectedService ?? undefined}
+        config={modalConfig}
+        fields={serviceFormFields}
+        initialValues={initialModalValues}
         isSubmitting={isSubmitting}
         error={modalError}
         onSubmit={handleSubmit}

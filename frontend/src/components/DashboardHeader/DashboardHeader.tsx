@@ -1,3 +1,4 @@
+import { Plus, type LucideIcon } from "lucide-react";
 import "./DashboardHeader.css";
 
 export type DashboardHeaderStat = {
@@ -8,11 +9,21 @@ export type DashboardHeaderStat = {
   changeTone?: "positive" | "negative" | "neutral";
 };
 
+export interface DashboardHeaderAction {
+  label: string;
+  icon?: LucideIcon;
+  onClick: () => void;
+  disabled?: boolean;
+  variant?: "primary" | "secondary";
+}
+
 interface DashboardHeaderProps {
   id?: string;
   title: string;
   subtitle?: string;
   stats?: DashboardHeaderStat[];
+  showAction?: boolean;
+  action?: DashboardHeaderAction;
 }
 
 /**
@@ -23,12 +34,34 @@ export const DashboardHeader = ({
   title,
   subtitle,
   stats = [],
+  showAction = false,
+  action,
 }: DashboardHeaderProps) => {
+  const ActionIcon = action?.icon ?? Plus;
+
   return (
     <header className="dashboardHeaderRoot" id={id}>
-      <div className="dashboardHeaderText">
-        <h1>{title}</h1>
-        {subtitle ? <p>{subtitle}</p> : null}
+      <div className="dashboardHeaderTop">
+        <div className="dashboardHeaderText">
+          <h1>{title}</h1>
+          {subtitle ? <p>{subtitle}</p> : null}
+        </div>
+
+        {showAction && action && (
+          <div className="containerButtonHeader">
+            <button
+              type="button"
+              className={`dashboardHeaderActionBtn ${
+                action.variant === "secondary" ? "is-secondary" : "is-primary"
+              }`}
+              onClick={action.onClick}
+              disabled={action.disabled}
+            >
+              <ActionIcon size={18} />
+              <span>{action.label}</span>
+            </button>
+          </div>
+        )}
       </div>
 
       {stats.length > 0 ? (

@@ -1,5 +1,4 @@
-import PenIcon from "../../assets/icons/pen.svg";
-import TrashIcon from "../../assets/icons/trash.svg";
+import { Pencil, Trash2 } from "lucide-react";
 import type { Service } from "../../types";
 import "./ServiceCard.css";
 
@@ -75,7 +74,7 @@ export const ServiceCard = ({
             aria-label={`Editar ${service.name}`}
             disabled={!canEdit}
           >
-            <img src={PenIcon} alt="" aria-hidden="true" />
+            <Pencil size={16} />
           </button>
         ) : null}
         {onDelete ? (
@@ -86,7 +85,7 @@ export const ServiceCard = ({
             aria-label={`Eliminar ${service.name}`}
             disabled={!canDelete}
           >
-            <img src={TrashIcon} alt="" aria-hidden="true" />
+            <Trash2 size={16} />
           </button>
         ) : null}
       </div>

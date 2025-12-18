@@ -14,6 +14,16 @@ export const createBooking = async (payload: NewBooking): Promise<Booking> => {
   });
 };
 
+export const updateBooking = async (
+  id: string,
+  payload: Partial<NewBooking>
+): Promise<Booking> => {
+  return request<Booking, Partial<NewBooking>>(`${RESOURCE}/${id}`, {
+    method: "PATCH",
+    body: payload,
+  });
+};
+
 export const deleteBooking = async (id: string): Promise<void> => {
   await request<void>(`${RESOURCE}/${id}`, { method: "DELETE" });
 };

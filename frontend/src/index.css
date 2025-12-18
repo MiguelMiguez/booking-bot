@@ -1,93 +1,9 @@
-:root {
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
   font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
   line-height: 1.6;
   font-weight: 400;
-  color: #0f172a;
-  background-color: #f3f4f6;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  background-color: inherit;
-}
-
-#root {
-  min-height: 100vh;
-}
-
-a {
-  color: #2563eb;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-button {
-  border-radius: 10px;
-  border: 1px solid transparent;
-  padding: 0.55rem 1.1rem;
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: inherit;
-  background-color: #2563eb;
-  color: #ffffff;
-  cursor: pointer;
-  transition: background-color 0.2s ease, transform 0.2s ease;
-}
-
-button:hover {
-  background-color: #1d4ed8;
-  transform: translateY(-1px);
-}
-
-button:disabled {
-  background-color: #9ca3af;
-  cursor: not-allowed;
-  transform: none;
-}
-
-input,
-textarea,
-select {
-  width: 100%;
-  padding: 0.55rem 0.75rem;
-  border-radius: 10px;
-  border: 1px solid #cbd5f5;
-  background-color: #ffffff;
-  font: inherit;
-  color: inherit;
-}
-
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: #2563eb;
-  outline: 3px solid rgba(37, 99, 235, 0.2);
-}
-
-textarea {
-  resize: vertical;
-}
-
-code {
-  font-family: "Fira Code", "Source Code Pro", Menlo, Monaco, Consolas,
-    "Courier New", monospace;
-  background-color: #e2e8f0;
-  color: #1e293b;
-  padding: 0 0.25rem;
-  border-radius: 6px;
 }

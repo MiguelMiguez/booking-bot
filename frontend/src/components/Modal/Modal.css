@@ -1,0 +1,267 @@
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(15, 23, 42, 0.5);
+  padding: 1.5rem;
+  z-index: 110;
+  opacity: 0;
+  pointer-events: none;
+  will-change: opacity;
+}
+
+.modalOverlay.is-visible {
+  pointer-events: auto;
+  animation: modal-overlay-in 260ms ease forwards;
+}
+
+.modalOverlay.is-hidden {
+  pointer-events: none;
+  animation: modal-overlay-out 200ms ease forwards;
+}
+
+@keyframes modal-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.modalCard {
+  width: min(560px, 100%);
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 22px;
+  box-shadow: 0 28px 68px rgba(15, 23, 42, 0.22);
+  padding: 2.2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  transform: translate3d(0, 28px, 0) scale(0.94);
+  opacity: 0;
+  will-change: transform, opacity;
+}
+
+.modalCard.is-visible {
+  animation: modal-card-in 280ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.modalCard.is-hidden {
+  animation: modal-card-out 200ms ease forwards;
+}
+
+@keyframes modal-card-in {
+  from {
+    transform: translate3d(0, 28px, 0) scale(0.94);
+    opacity: 0;
+  }
+  to {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes modal-card-out {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate3d(0, 28px, 0) scale(0.94);
+    opacity: 0;
+  }
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.modalHeader p {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.modalClose {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.modalClose:hover:not(:disabled),
+.modalClose:focus-visible:not(:disabled) {
+  background: rgba(37, 99, 235, 0.18);
+  color: #2563eb;
+}
+
+.modalClose:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modalForm {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.modalFormGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.modalFormField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.modalFormField.is-full {
+  grid-column: 1 / -1;
+}
+
+.modalFormField span {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #334155;
+}
+
+.modalFormField input,
+.modalFormField select,
+.modalFormField textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  color: #0f172a;
+  background: #f8fafc;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.modalFormField input:focus,
+.modalFormField select:focus,
+.modalFormField textarea:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.modalFormField input:disabled,
+.modalFormField select:disabled,
+.modalFormField textarea:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+.modalFormField textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.modalFormError {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  background: rgba(239, 68, 68, 0.1);
+  border-radius: 10px;
+  color: #dc2626;
+  font-size: 0.875rem;
+}
+
+.modalFormActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  padding-top: 0.5rem;
+}
+
+.modalCancelBtn,
+.modalSubmitBtn {
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.modalCancelBtn {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+}
+
+.modalCancelBtn:hover:not(:disabled) {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.modalSubmitBtn {
+  background: #2563eb;
+  border: none;
+  color: #ffffff;
+}
+
+.modalSubmitBtn:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.modalCancelBtn:disabled,
+.modalSubmitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
+  .modalCard {
+    padding: 1.5rem;
+    border-radius: 16px;
+  }
+
+  .modalFormGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .modalHeader h2 {
+    font-size: 1.25rem;
+  }
+
+  .modalFormActions {
+    flex-direction: column-reverse;
+  }
+
+  .modalCancelBtn,
+  .modalSubmitBtn {
+    width: 100%;
+  }
+}
