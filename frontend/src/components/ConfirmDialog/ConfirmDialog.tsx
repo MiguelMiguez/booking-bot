@@ -2,9 +2,9 @@ import { useEffect, useId, useState } from "react";
 import { createPortal } from "react-dom";
 import "./ConfirmDialog.css";
 
-type ConfirmDialogTone = "default" | "danger";
+export type ConfirmDialogTone = "default" | "danger";
 
-interface ConfirmDialogProps {
+export interface ConfirmDialogProps {
   open: boolean;
   title: string;
   description?: string;

@@ -1,2 +1,6 @@
 backend/google-credentials.json
 .env
+
+.firebase
+*.cache
+.firebase/hosting.ZnJvbnRlbmRcZGlzdA.cache

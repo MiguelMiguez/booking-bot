@@ -5,7 +5,6 @@ import NotificationToast, {
 import { BookingTable } from "../../components/BookingTable/BookingTable";
 import { DashboardMetrics } from "../../components/DashboardMetrics/DashboardMetrics";
 import { BookingModal } from "../../components/BookingModal/BookingModal";
-import { ConfirmDialog } from "../../components/ConfirmDialog/ConfirmDialog";
 import { useAuth } from "../../hooks/useAuth";
 import {
   createBooking,
@@ -71,9 +70,6 @@ const TurnosPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [bookingToDelete, setBookingToDelete] = useState<Booking | null>(null);
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [isConfirmBusy, setIsConfirmBusy] = useState(false);
 
   const loadBookings = useCallback(async () => {
     setIsLoadingBookings(true);
@@ -160,60 +156,31 @@ const TurnosPage = () => {
     }
   };
 
-  const handleRequestDelete = useCallback(
-    (id: string) => {
+  const handleDeleteBooking = useCallback(
+    async (id: string): Promise<void> => {
       if (!isAdmin) {
         return;
       }
 
-      const booking = bookings.find((item) => item.id === id) ?? null;
-      if (!booking) {
-        return;
+      setDeletingId(id);
+
+      try {
+        await deleteBooking(id);
+        setBookings((prev) => prev.filter((item) => item.id !== id));
+        notify("Turno eliminado correctamente.", "success");
+      } catch (error) {
+        const message =
+          error instanceof Error
+            ? error.message
+            : "No se pudo eliminar el turno.";
+        notify(message, "error");
+        throw error;
+      } finally {
+        setDeletingId(null);
       }
-
-      setBookingToDelete(booking);
-      setIsConfirmOpen(true);
-      setIsConfirmBusy(false);
     },
-    [bookings, isAdmin]
+    [isAdmin, notify]
   );
-
-  const handleCancelDelete = useCallback(() => {
-    if (isConfirmBusy) {
-      return;
-    }
-
-    setIsConfirmOpen(false);
-    setBookingToDelete(null);
-  }, [isConfirmBusy]);
-
-  const handleConfirmDelete = useCallback(async () => {
-    if (!isAdmin || !bookingToDelete) {
-      return;
-    }
-
-    setIsConfirmBusy(true);
-    setDeletingId(bookingToDelete.id);
-
-    try {
-      await deleteBooking(bookingToDelete.id);
-      setBookings((prev) =>
-        prev.filter((item) => item.id !== bookingToDelete.id)
-      );
-      notify("Turno eliminado correctamente.", "success");
-      setIsConfirmOpen(false);
-      setBookingToDelete(null);
-    } catch (error) {
-      const message =
-        error instanceof Error
-          ? error.message
-          : "No se pudo eliminar el turno.";
-      notify(message, "error");
-    } finally {
-      setDeletingId(null);
-      setIsConfirmBusy(false);
-    }
-  }, [bookingToDelete, isAdmin, notify]);
 
   const metricsLoading = useMemo(
     () => isLoadingBookings || isLoadingServices,
@@ -256,7 +223,7 @@ const TurnosPage = () => {
         <BookingTable
           bookings={bookings}
           isLoading={isLoadingBookings}
-          onDelete={isAdmin ? handleRequestDelete : undefined}
+          onDelete={isAdmin ? handleDeleteBooking : undefined}
           deletingId={deletingId}
         />
       </section>
@@ -277,22 +244,6 @@ const TurnosPage = () => {
         error={modalError}
         onSubmit={handleCreateBooking}
         onClose={closeModal}
-      />
-
-      <ConfirmDialog
-        open={isConfirmOpen}
-        title="Eliminar turno"
-        description={
-          bookingToDelete
-            ? `¿Eliminar el turno de ${bookingToDelete.name} para el servicio ${bookingToDelete.service} el ${bookingToDelete.date} a las ${bookingToDelete.time}?`
-            : "¿Eliminar el turno seleccionado?"
-        }
-        confirmLabel="Eliminar"
-        cancelLabel="Cancelar"
-        tone="danger"
-        isBusy={isConfirmBusy}
-        onCancel={handleCancelDelete}
-        onConfirm={handleConfirmDelete}
       />
     </div>
   );

@@ -1,17 +1,19 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import {
   DataGrid,
   GridToolbarQuickFilter,
   type GridColDef,
   type GridRenderCellParams,
 } from "@mui/x-data-grid";
+import { ConfirmDialog } from "../ConfirmDialog";
+import { useConfirmDialog } from "../../hooks/useConfirmDialog";
 import type { Booking } from "../../types";
 import "./BookingTable.css";
 
 interface BookingTableProps {
   bookings: Booking[];
   isLoading?: boolean;
-  onDelete?: (id: string) => void;
+  onDelete?: (id: string) => Promise<void>;
   deletingId?: string | null;
 }
 
@@ -52,6 +54,44 @@ export const BookingTable = ({
   onDelete,
   deletingId = null,
 }: BookingTableProps) => {
+  const confirmDelete = useConfirmDialog<Booking>({
+    defaultTitle: "Eliminar turno",
+    defaultConfirmLabel: "Eliminar",
+    defaultCancelLabel: "Cancelar",
+    defaultTone: "danger",
+  });
+
+  const handleRequestDelete = useCallback(
+    (id: string) => {
+      const booking = bookings.find((item) => item.id === id);
+      if (!booking) {
+        return;
+      }
+
+      confirmDelete.open({
+        description: `¿Eliminar el turno de ${booking.name} para el servicio ${booking.service} el ${booking.date} a las ${booking.time}?`,
+        data: booking,
+      });
+    },
+    [bookings, confirmDelete]
+  );
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!confirmDelete.data || !onDelete) {
+      return;
+    }
+
+    const bookingToDelete = confirmDelete.data;
+    confirmDelete.setBusy(true);
+
+    try {
+      await onDelete(bookingToDelete.id);
+      confirmDelete.reset();
+    } catch {
+      confirmDelete.setBusy(false);
+    }
+  }, [confirmDelete, onDelete]);
+
   const rows = useMemo(
     () =>
       bookings.map((booking) => ({
@@ -112,7 +152,7 @@ export const BookingTable = ({
             <button
               type="button"
               className="bookingTableDelete"
-              onClick={() => onDelete(params.row.id as string)}
+              onClick={() => handleRequestDelete(params.row.id as string)}
               disabled={deletingId === (params.row.id as string)}
             >
               {deletingId === (params.row.id as string)
@@ -122,7 +162,7 @@ export const BookingTable = ({
           ) : null,
       },
     ],
-    [deletingId, onDelete]
+    [deletingId, onDelete, handleRequestDelete]
   );
 
   return (
@@ -166,6 +206,11 @@ export const BookingTable = ({
           }}
         />
       </div>
+
+      <ConfirmDialog
+        {...confirmDelete.dialogProps}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 };
