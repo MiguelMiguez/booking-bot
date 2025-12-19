@@ -193,7 +193,7 @@ export const DataTable = <T extends { id: string }>({
 
       <div className="dataTableGridWrapper">
         <DataGrid
-          autoHeight
+          style={{ height: "600px" }}
           rows={data}
           columns={gridColumns}
           loading={isLoading}

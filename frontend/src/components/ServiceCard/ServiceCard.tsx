@@ -44,7 +44,7 @@ export const ServiceCard = ({
       </div>
 
       <div className="serviceCardContent">
-        <header className="serviceCardHeader">
+        <div className="serviceCardHeader">
           <h3>{service.name}</h3>
           <ul className="serviceCardMeta" aria-label="Detalles del servicio">
             {durationLabel ? (
@@ -56,10 +56,10 @@ export const ServiceCard = ({
               </span>
             ) : null}
           </ul>
-        </header>
-        {service.description ? (
-          <p className="serviceCardDescription">{service.description}</p>
-        ) : null}
+          {service.description ? (
+            <p className="serviceCardDescription">{service.description}</p>
+          ) : null}
+        </div>
       </div>
 
       <div className="serviceCardActions">
