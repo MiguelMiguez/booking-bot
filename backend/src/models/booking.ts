@@ -6,6 +6,14 @@ export interface CreateBookingInput {
   phone: string;
 }
 
+export interface UpdateBookingInput {
+  name?: string;
+  service?: string;
+  date?: string;
+  time?: string;
+  phone?: string;
+}
+
 export interface Booking extends CreateBookingInput {
   id: string;
   createdAt: string;

@@ -180,6 +180,62 @@ export const listBookings = async (): Promise<Booking[]> => {
   );
 };
 
+export const updateBooking = async (
+  id: string,
+  payload: Partial<CreateBookingInput>
+): Promise<Booking> => {
+  const db = getFirestore();
+  const docRef = db.collection(BOOKINGS_COLLECTION).doc(id);
+  const doc = await docRef.get();
+
+  if (!doc.exists) {
+    throw new HttpError(404, "El turno solicitado no existe.");
+  }
+
+  const currentData = doc.data() as BookingDocument;
+
+  const newDate = payload.date ?? currentData.date;
+  const newTime = payload.time ?? currentData.time;
+  const newService = payload.service ?? currentData.service;
+
+  if (payload.time && !isWithinBusinessHours(newTime)) {
+    throw new HttpError(400, "Los turnos disponibles son de 09:00 a 19:00.");
+  }
+
+  if (payload.date || payload.time || payload.service) {
+    const slotTaken = await isSlotTaken(newDate, newTime, newService);
+    if (slotTaken) {
+      const existingBooking = await db
+        .collection(BOOKINGS_COLLECTION)
+        .where("date", "==", newDate)
+        .where("time", "==", newTime)
+        .where("service", "==", newService)
+        .limit(1)
+        .get();
+
+      const conflictingDoc = existingBooking.docs[0];
+      if (conflictingDoc && conflictingDoc.id !== id) {
+        throw new HttpError(409, "El horario ya no está disponible.");
+      }
+    }
+  }
+
+  const updateData: Partial<BookingDocument> = {};
+  if (payload.name !== undefined) updateData.name = payload.name;
+  if (payload.service !== undefined) updateData.service = payload.service;
+  if (payload.date !== undefined) updateData.date = payload.date;
+  if (payload.time !== undefined) updateData.time = payload.time;
+  if (payload.phone !== undefined) updateData.phone = payload.phone;
+
+  await docRef.update(updateData);
+
+  const updatedDoc = await docRef.get();
+  return {
+    id: updatedDoc.id,
+    ...(updatedDoc.data() as BookingDocument),
+  };
+};
+
 export const deleteBooking = async (id: string): Promise<void> => {
   const db = getFirestore();
   const docRef = db.collection(BOOKINGS_COLLECTION).doc(id);

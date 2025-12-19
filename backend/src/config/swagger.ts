@@ -151,6 +151,23 @@ const swaggerDocument = {
           price: 2200,
         },
       },
+      UpdateBookingInput: {
+        type: "object",
+        properties: {
+          name: { type: "string" },
+          service: { type: "string" },
+          date: { type: "string", format: "date" },
+          time: { type: "string", example: "11:30" },
+          phone: { type: "string" },
+        },
+        description:
+          "Campos opcionales para editar un turno existente. Se puede enviar uno o varios.",
+        example: {
+          name: "Juan Pérez",
+          date: "2025-10-26",
+          time: "14:00",
+        },
+      },
       ErrorResponse: {
         type: "object",
         properties: {
@@ -255,6 +272,87 @@ const swaggerDocument = {
       },
     },
     "/bookings/{id}": {
+      patch: {
+        tags: ["Bookings"],
+        summary: "Actualiza un turno existente",
+        description: "Requiere rol admin.",
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+            description: "Identificador del turno a actualizar",
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/UpdateBookingInput" },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: "Turno actualizado",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Booking" },
+              },
+            },
+          },
+          400: {
+            description: "Solicitud inválida",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+          401: {
+            description: "Autenticación requerida o clave inválida",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+          403: {
+            description: "Permisos insuficientes (se requiere rol admin)",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+          404: {
+            description: "Turno no encontrado",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+          409: {
+            description: "El horario ya no está disponible",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+          500: {
+            description: "Error inesperado",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+        },
+      },
       delete: {
         tags: ["Bookings"],
         summary: "Elimina un turno existente",
@@ -407,137 +505,137 @@ const swaggerDocument = {
             },
           },
         },
-        "/services/{id}": {
-          put: {
-            tags: ["Services"],
-            summary: "Actualiza un servicio existente",
-            description: "Requiere rol admin.",
-            security: [{ ApiKeyAuth: [] }],
-            parameters: [
-              {
-                name: "id",
-                in: "path",
-                required: true,
-                schema: { type: "string" },
-                description: "Identificador del servicio a actualizar",
-              },
-            ],
-            requestBody: {
-              required: true,
-              content: {
-                "application/json": {
-                  schema: { $ref: "#/components/schemas/UpdateServiceInput" },
-                },
-              },
+      },
+    },
+    "/services/{id}": {
+      put: {
+        tags: ["Services"],
+        summary: "Actualiza un servicio existente",
+        description: "Requiere rol admin.",
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+            description: "Identificador del servicio a actualizar",
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/UpdateServiceInput" },
             },
-            responses: {
-              200: {
-                description: "Servicio actualizado",
-                content: {
-                  "application/json": {
-                    schema: { $ref: "#/components/schemas/Service" },
-                  },
-                },
-              },
-              400: {
-                description: "Solicitud inválida",
-                content: {
-                  "application/json": {
-                    schema: { $ref: "#/components/schemas/ErrorResponse" },
-                  },
-                },
-              },
-              401: {
-                description: "Autenticación requerida o clave inválida",
-                content: {
-                  "application/json": {
-                    schema: { $ref: "#/components/schemas/ErrorResponse" },
-                  },
-                },
-              },
-              403: {
-                description: "Permisos insuficientes (se requiere rol admin)",
-                content: {
-                  "application/json": {
-                    schema: { $ref: "#/components/schemas/ErrorResponse" },
-                  },
-                },
-              },
-              404: {
-                description: "Servicio no encontrado",
-                content: {
-                  "application/json": {
-                    schema: { $ref: "#/components/schemas/ErrorResponse" },
-                  },
-                },
-              },
-              500: {
-                description: "Error inesperado",
-                content: {
-                  "application/json": {
-                    schema: { $ref: "#/components/schemas/ErrorResponse" },
-                  },
-                },
+          },
+        },
+        responses: {
+          200: {
+            description: "Servicio actualizado",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/Service" },
               },
             },
           },
-          delete: {
-            tags: ["Services"],
-            summary: "Elimina un servicio",
-            description: "Requiere rol admin.",
-            security: [{ ApiKeyAuth: [] }],
-            parameters: [
-              {
-                name: "id",
-                in: "path",
-                required: true,
-                schema: { type: "string" },
-                description: "Identificador del servicio a eliminar",
+          400: {
+            description: "Solicitud inválida",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
               },
-            ],
-            responses: {
-              204: {
-                description: "Servicio eliminado",
+            },
+          },
+          401: {
+            description: "Autenticación requerida o clave inválida",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
               },
-              400: {
-                description: "Solicitud inválida",
-                content: {
-                  "application/json": {
-                    schema: { $ref: "#/components/schemas/ErrorResponse" },
-                  },
-                },
+            },
+          },
+          403: {
+            description: "Permisos insuficientes (se requiere rol admin)",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
               },
-              401: {
-                description: "Autenticación requerida o clave inválida",
-                content: {
-                  "application/json": {
-                    schema: { $ref: "#/components/schemas/ErrorResponse" },
-                  },
-                },
+            },
+          },
+          404: {
+            description: "Servicio no encontrado",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
               },
-              403: {
-                description: "Permisos insuficientes (se requiere rol admin)",
-                content: {
-                  "application/json": {
-                    schema: { $ref: "#/components/schemas/ErrorResponse" },
-                  },
-                },
+            },
+          },
+          500: {
+            description: "Error inesperado",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
               },
-              404: {
-                description: "Servicio no encontrado",
-                content: {
-                  "application/json": {
-                    schema: { $ref: "#/components/schemas/ErrorResponse" },
-                  },
-                },
+            },
+          },
+        },
+      },
+      delete: {
+        tags: ["Services"],
+        summary: "Elimina un servicio",
+        description: "Requiere rol admin.",
+        security: [{ ApiKeyAuth: [] }],
+        parameters: [
+          {
+            name: "id",
+            in: "path",
+            required: true,
+            schema: { type: "string" },
+            description: "Identificador del servicio a eliminar",
+          },
+        ],
+        responses: {
+          204: {
+            description: "Servicio eliminado",
+          },
+          400: {
+            description: "Solicitud inválida",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
               },
-              500: {
-                description: "Error inesperado",
-                content: {
-                  "application/json": {
-                    schema: { $ref: "#/components/schemas/ErrorResponse" },
-                  },
-                },
+            },
+          },
+          401: {
+            description: "Autenticación requerida o clave inválida",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+          403: {
+            description: "Permisos insuficientes (se requiere rol admin)",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+          404: {
+            description: "Servicio no encontrado",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
+              },
+            },
+          },
+          500: {
+            description: "Error inesperado",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ErrorResponse" },
               },
             },
           },

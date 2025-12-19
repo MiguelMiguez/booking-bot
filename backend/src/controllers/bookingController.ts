@@ -3,8 +3,9 @@ import {
   createBooking,
   deleteBooking,
   listBookings,
+  updateBooking,
 } from "../services/bookingService";
-import { CreateBookingInput } from "../models/booking";
+import { CreateBookingInput, UpdateBookingInput } from "../models/booking";
 import { HttpError } from "../utils/httpError";
 import { logger } from "../utils/logger";
 
@@ -73,6 +74,31 @@ export const handleDeleteBooking = async (
     await deleteBooking(id);
     logger.info(`Turno eliminado (${id})`);
     res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const handleUpdateBooking = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      throw new HttpError(400, "Se requiere el id del turno a actualizar.");
+    }
+
+    const payload = req.body as UpdateBookingInput;
+
+    if (Object.keys(payload).length === 0) {
+      throw new HttpError(400, "Se requiere al menos un campo para actualizar.");
+    }
+
+    const booking = await updateBooking(id, payload);
+    logger.info(`Turno actualizado (${id})`);
+    res.json(booking);
   } catch (error) {
     next(error);
   }
