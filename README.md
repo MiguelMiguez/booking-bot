@@ -78,7 +78,7 @@ booking-bot/
 2. **Clonar el repositorio**
 
    ```bash
-   git clone git@github.com:<usuario>/booking-bot.git
+   git clone git@github.com:MiguelMiguez/booking-bot.git
    cd booking-bot
    ```
 
