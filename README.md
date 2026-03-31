@@ -2,6 +2,8 @@
 
 Plataforma end-to-end para administrar turnos de un negocio desde un panel web y un bot de WhatsApp. El repositorio contiene un backend en TypeScript/Express conectado a Firebase Firestore y un frontend en React + Vite orientado a la gestión operativa. Además, se incluye un bot basado en `whatsapp-web.js` que permite validar el flujo conversacional de reserva de turnos. El backend está preparado para desplegarse en Render (plan gratuito) como servicio Node.js.
 
+(Proximamente se migra a la api de wpp)
+
 ## Tabla de contenidos
 
 - [Arquitectura general](#arquitectura-general)
