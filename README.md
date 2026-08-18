@@ -1,6 +1,6 @@
 # Booking Bot MVP
 
-Plataforma end-to-end para administrar turnos de un negocio desde un panel web y un bot de WhatsApp. El repositorio contiene un backend en TypeScript/Express conectado a Firebase Firestore y un frontend en React + Vite orientado a la gestión operativa.
+Plataforma end-to-end para administrar turnos de un negocio desde un panel web y un bot de WhatsApp. 
 
 ## Tabla de contenidos
 
